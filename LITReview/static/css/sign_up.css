@@ -1,0 +1,113 @@
+/******************************* Base : mobile-first *******************************/
+
+.signup-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .signup-container h2 {
+    color: #34495e;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 22px;
+  }
+  
+  /* Form de base */
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Champs */
+  form div {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 15px;
+  }
+  
+  form input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    text-align: center;  
+    color: #666;
+  }
+
+  form input::placeholder {
+    text-align: center;
+    color: #aaa;
+  }
+  
+  /* Erreurs */
+  .error {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  
+  /* Groupe de boutons */
+  .button-group {
+    display: flex;
+    flex-direction: column-reverse; /* Inverse l’ordre : Retourner sous S'inscrire */
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+  }
+  
+  /* Style commun pour les deux boutons */
+  .button-group button,
+  .button-group .btn-return {
+    all: unset;
+    display: block;
+    background-color: #18bc9c;
+    color: white;
+    font-size: 16px;
+    padding: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button-group button:hover,
+  .button-group .btn-return:hover {
+    background-color: #149c82;
+}
+  
+  
+/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+@media (min-width: 768px) {
+    .signup-container {
+        padding: 40px;
+      }
+    
+    .button-group {
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+        max-width: none;
+    }
+    
+    .button-group button,
+    .button-group .btn-return {
+        max-width: 200px;
+    }
+    
+      /* Décalage léger du bouton Retourner */
+    .button-group .btn-return {
+        margin-top: 10px; 
+    }
+}

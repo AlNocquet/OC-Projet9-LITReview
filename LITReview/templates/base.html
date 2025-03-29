@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LITReview</title>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
+    <link rel="stylesheet" href="{% static 'css/divers.css' %}">
+</head>
+
+<body>
+
+    <header>
+        <div class="header-wrapper">
+            <h1>LITReview</h1>
+
+            <nav class="nav-box">
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'profile' %}">Mon Profil</a></li>
+                        <li><a href="{% url 'flux' %}">Flux</a></li>
+                        <li><a href="#">Posts</a></li>
+                        <li><a href="#">Abonnements</a></li>
+                        <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <!-- Pied de page si besoin -->
+    </footer>
+
+</body>
+
+</html>

@@ -77,3 +77,5 @@ class UserFollows(models.Model):
     class Meta :
         unique_together = ('user', 'followed_user') 
             # Contrainte : Ne peut suivre un autre utilisateur qu'une seule fois ;
+
+

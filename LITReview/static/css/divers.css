@@ -1,0 +1,156 @@
+
+/******************************* Base : mobile-first *******************************/
+
+.auth-container {
+    width: 90%;
+    max-width: 500px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .auth-container h2 {
+    color: #34495e;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  
+  .auth-container p {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+  
+  .auth-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .auth-container input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    text-align: center;
+    color: #666;
+    box-sizing: border-box;
+  }
+  
+  .auth-container input::placeholder {
+    color: #aaa;
+    text-align: center;
+  }
+  
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    all: unset;
+    display: block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-container .button-group a.btn-secondary {
+    margin-top: 10px;
+  }
+
+  .btn-primary {
+    background-color: #18bc9c;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #149c82;
+  }
+  
+  .btn-secondary {
+    background-color: #bdc3c7;
+    color: #2c3e50;
+    text-decoration: none;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #a6b0b3;
+  }
+  
+  .btn-danger {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c0392b;
+  }
+  
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  
+
+  .error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  
+/******************************* Tablet : à partir de 768px *******************************/
+  @media (min-width: 768px) {
+    .auth-container {
+      padding: 40px;
+    }
+  
+    .auth-container h2 {
+      font-size: 22px;
+    }
+  
+    .auth-container p {
+      font-size: 16px;
+    }
+  
+    .button-group {
+      flex-direction: row;
+      justify-content: center;
+      gap: 20px;
+    }
+  
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+      width: auto;
+    }
+  }
+  
+  
+/******************************* Desktop : à partir de 1024px *******************************/
+  @media (min-width: 1024px) {
+    .auth-container {
+      margin-top: 80px;
+      padding: 50px;
+    }
+  
+    .auth-container h2 {
+      font-size: 24px;
+    }
+  
+    .auth-container p {
+      font-size: 17px;
+    }
+  }

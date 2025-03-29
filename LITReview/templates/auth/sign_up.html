@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="signup-container">
+    <h2>Inscrivez-vous</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Champ : Nom d'utilisateur -->
+        <div>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Adresse email -->
+        <div>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Mot de passe -->
+        <div>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div class="error">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Confirmation mot de passe -->
+        <div>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div class="error">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Groupe de boutons -->
+        <div class="button-group">
+            <a href="{% url 'home' %}" class="btn-return">Page accueil</a>
+            <button type="submit">S'inscrire</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

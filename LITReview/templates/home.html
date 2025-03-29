@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="home-container">
+
+    <div class="home-columns">
+
+        <!-- Section INSCRIPTION -->
+        <div class="signup-section">
+            <h2>Inscrivez-vous maintenant</h2>
+
+            <div class="signup-button-wrapper">
+                <a href="{% url 'sign_up' %}" class="home-btn">S'inscrire</a>
+            </div>
+        </div>
+
+        <!-- Section CONNEXION -->
+        <div class="login-section">
+            <h2>Connectez-vous</h2>
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+            
+                <div>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="error">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+            
+                <div>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="error">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+            
+                <button type="submit" class="home-btn">Se connecter</button>
+                <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

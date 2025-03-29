@@ -1,0 +1,126 @@
+/******************************* Base : mobile-first *******************************/
+
+.home-container {
+  padding: 20px;
+  max-width: 100%;
+}
+
+.home-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Cartes */
+.signup-section,
+.login-section {
+  width: 100%;
+  max-width: 90%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+/* Titres centrés + espace dessous */
+.signup-section h2,
+.login-section h2 {
+  color: #34495e;
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+/* Bouton wrapper pour placement libre */
+.signup-button-wrapper {
+  margin-top: 75px; 
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Boutons Home */
+.home-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;        
+  align-items: center;     
+  justify-content: center; 
+  background-color: #18bc9c;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 auto;
+  transition: background-color 0.3s ease;
+}
+
+.home-btn:hover {
+  background-color: #149c82;
+}
+
+/* Formulaire */
+.login-section form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Champs input stylisés + textes centrés */
+.login-section input {
+  width: 90%;
+  max-width: 300px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.login-section input::placeholder {
+  text-align: center;
+}
+
+
+/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+@media (min-width: 768px) {
+  .home-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 80px;
+  }
+
+  .home-columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 40px;
+  }
+
+  .signup-section,
+  .login-section {
+    width: 450px;
+    max-width: none;
+    height: 380px;
+    flex: 0 0 auto;
+    padding: 30px 40px;
+  }
+
+  .signup-button-wrapper {
+    margin-top: 132px; 
+  }
+}

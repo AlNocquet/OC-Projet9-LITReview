@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+  <h2>Suppression du compte</h2>
+  <p>Cette action est <strong>irréversible</strong>. Êtes-vous certain de vouloir supprimer définitivement votre compte ?</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="button-group">
+      <button type="submit" class="btn-danger">Oui, supprimer</button>
+      <a href="{% url 'profile' %}" class="btn-secondary">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
