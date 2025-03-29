@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# VSCode / PyCharm / Other IDEs
+.vscode/
+.idea/
+*.swp
+
+# Django specific
+db.sqlite3
+/media/
+staticfiles/
+
+# Migrations (keep __init__.py)
+**/migrations/
+!*/migrations/__init__.py
+
+# Environment variables / secrets
+.env
+.env.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Flake8 / coverage / reports
+flake-report/
+coverage/
+htmlcov/
+
