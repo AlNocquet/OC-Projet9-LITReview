@@ -55,6 +55,7 @@ Users must be authenticated to access the main features. A homepage offers regis
 - **Feed**: Personalized feed of reviews and tickets
 - **Posts**: Create or respond to review requests
 - **User management**: Profile update, logout, account deletion
+- **Follow system**: Subscribe to or unfollow other users on the platform
 
 
 
