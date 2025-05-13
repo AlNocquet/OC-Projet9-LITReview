@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
     <link rel="stylesheet" href="{% static 'css/divers.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscriptions.css' %}">
 </head>
 
 <body>
@@ -29,7 +30,7 @@
                         <li><a href="{% url 'profile' %}">Mon Profil</a></li>
                         <li><a href="{% url 'flux' %}">Flux</a></li>
                         <li><a href="#">Posts</a></li>
-                        <li><a href="#">Abonnements</a></li>
+                        <li><a href="{% url 'subscriptions' %}">Abonnements</a></li>
                         <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
                     {% endif %}
                 </ul>

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="subscriptions-container">
+
+    <h2>Suivre d'autres utilisateurs</h2>
+    <form method="post" class="follow-form">
+        {% csrf_token %}
+        <div class="follow-input-group">
+            {{ form.username }}
+            <button type="submit" class="btn">Envoyer</button>
+        </div>
+    </form>
+
+    <h4>Abonnements</h4>
+    <table>
+        {% for follow in followed_users %}
+            <tr>
+                <td class="username">{{ follow.followed_user.username }}</td>
+                <td><a href="{% url 'unfollow' follow.followed_user.id %}" class="btn btn-delete">Se désabonner</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="2">Vous ne suivez encore personne.</td></tr>
+        {% endfor %}
+    </table>
+
+    <h4>Abonnés</h4>
+    <table>
+        {% for follower in followers %}
+            <tr>
+                <td class="username">{{ follower.user.username }}</td>
+                <td><a href="{% url 'block_from_follower' follower.user.id %}" class="btn btn-delete">Bloquer</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="2">Vous n'avez pas encore d'abonnés.</td></tr>
+        {% endfor %}
+    </table>
+
+    <h4>Bloquer un utilisateur</h4>
+    <form method="post" class="follow-form">
+        {% csrf_token %}
+        <input type="hidden" name="block" value="1">
+        <div class="follow-input-group">
+            {{ block_form.username }}
+            <button type="submit" class="btn btn-delete">Bloquer</button>
+        </div>
+    </form>
+
+    <h4>Utilisateurs bloqués</h4>
+    <table>
+        {% for block in blocked_users %}
+            <tr>
+                <td class="username">{{ block.blocked_user.username }}</td>
+                <td><a href="{% url 'unblock_user' block.blocked_user.id %}" class="btn">Débloquer</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="2">Vous n'avez bloqué personne.</td></tr>
+        {% endfor %}
+    </table>
+
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+/******************************* Base : mobile-first *******************************/
+
+.subscriptions-container {
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Titres */
+.subscriptions-container h2,
+.subscriptions-container h4 {
+    color: #34495e;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Tableaux */
+.subscriptions-container table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.subscriptions-container td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.subscriptions-container td:last-child {
+    text-align: right;
+}
+
+/* Boutons */
+.subscriptions-container .btn,
+.subscriptions-container .btn-delete {
+    all: unset;
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 5px;
+    min-width: 120px;
+}
+
+.subscriptions-container .btn {
+    background-color: #18bc9c;
+    color: white;
+}
+
+.subscriptions-container .btn:hover {
+    background-color: #149c82;
+}
+
+.subscriptions-container .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.subscriptions-container .btn-delete:hover {
+    background-color: #c0392b;
+}
+
+
+/* Formulaire horizontal suivi utilisateur */
+.subscriptions-container .follow-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.subscriptions-container .follow-input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 97%;
+}
+
+.subscriptions-container .follow-input-group input {
+    flex-grow: 1;
+    margin-bottom: 0;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    text-align: left;
+    color: #666;
+}
+
+.subscriptions-container .follow-input-group input::placeholder {
+    color: #aaa;
+}
+
+/* Indent, joliesse noms des utilisateurs */
+.subscriptions-container table td.username {
+    padding-left: 30px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.input-block::placeholder {
+    color: #aaa;
+    text-align: center;
+}
+
+/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+@media (min-width: 768px) {
+    .subscriptions-container {
+        padding: 30px 40px;
+    }
+
+    .subscriptions-container .btn,
+    .subscriptions-container .btn-delete {
+        font-size: 15px;
+    }
+}

@@ -7,21 +7,25 @@ from . import views
 
 urlpatterns = [
     path('', views.home_view, name='home'),
+    
+    # FLUX :
+    path('flux/', views.flux_view, name='flux'),
 
-    # GESTION UTILISATEUR :
+    # UTILISATEUR :
     path('sign_up/', views.signup_view, name='sign_up'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+
     path('profile/', views.profile_view, name='profile'),
     path('delete_account/', views.delete_account, name='delete_account'),
 
+    path('subscriptions/', views.subscriptions_view, name='subscriptions'),
+    path('unfollow/<int:user_id>/', views.unfollow_view, name='unfollow'),
+    path('unblock/<int:user_id>/', views.unblock_user_view, name='unblock_user'),
+    path('block_follower/<int:user_id>/', views.block_from_follower_view, name='block_from_follower'),
 
-    path('flux/', views.flux_view, name='flux'),
 
-    
-    
-    
-    # Mot de passe oublié :
+    # OUBLI MDP :
 
     # Formulaire pour saisir l’email : password_reset_form.html
     path('password_reset/', auth_views.PasswordResetView.as_view(

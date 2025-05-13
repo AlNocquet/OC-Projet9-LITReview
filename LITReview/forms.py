@@ -3,76 +3,85 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 
-class SignUpForm(UserCreationForm):
+class BaseForm(forms.Form):
+    """
+    Custom base form:
+    - Ensures consistent CSS styling across all form fields
+    - Automatically assigns placeholder text if not explicitly set
+    - Suppresses default labels to delegate visual control to templates <h>
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if not hasattr(field.widget, 'attrs'):
+                continue
+            placeholder = field.label or name.replace('_', ' ').capitalize()
+            field.widget.attrs.update({
+                'placeholder': placeholder,
+                'style': 'text-align: center; color: #666;',
+                'class': 'form-control'
+            })
+            field.label = ''
+
+
+class BaseModelForm(forms.ModelForm):
+    """
+    For ModelForms.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if not hasattr(field.widget, 'attrs'):
+                continue
+            placeholder = field.label or name.replace('_', ' ').capitalize()
+            field.widget.attrs.update({
+                'placeholder': placeholder,
+                'style': 'text-align: center; color: #666;',
+                'class': 'form-control'
+            })
+            field.label = ''
+
+
+
+class SignUpForm(BaseForm,UserCreationForm):
     """
     Custom form for user registration.
 
-    Inherits from Django's UserCreationForm and restricts visible fields to:
+    Inherits from BaseForm and Django's UserCreationForm, and restricts visible fields to:
     - Username
     - Email
     - Password
     - Password confirmation
-
-    Includes placeholders and styling for improved user experience.
     """
 
-    email = forms.EmailField(
-        required=True,
-        label="Adresse email",
-        help_text="Obligatoire. Utilisé pour réinitialiser votre mot de passe.",
-        widget=forms.EmailInput(attrs={
-            'placeholder': 'Adresse email',
-            'style': 'text-align: center; color: #666;',
-        })
-    )
-
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'placeholder': "Nom d'utilisateur",
-            'style': 'text-align: center; color: #666;',
-        })
-    )
-
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': "Mot de passe",
-            'style': 'text-align: center; color: #666;',
-        })
-    )
-
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': "Confirmer mot de passe",
-            'style': 'text-align: center; color: #666;',
-        })
-    )
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
 
-class ProfileUpdateForm(forms.ModelForm):
+
+class ProfileUpdateForm(BaseModelForm):
     """
     Custom form for updating user profile information.
 
-    Allows the user to update:
+    Fields:
     - Username
     - Email
 
-    Connected to Django's built-in User model.
+    Inherits from BaseModelForm.
     """
 
     class Meta:
         model = User
         fields = ['username', 'email']
-        labels = {
-            'username': 'Nom d\'utilisateur',
-            'email': 'Adresse email'
-        }
 
 
-class LoginForm(AuthenticationForm):
+
+class LoginForm(BaseForm, AuthenticationForm):
     """
     Custom form for user authentication.
 
@@ -80,19 +89,39 @@ class LoginForm(AuthenticationForm):
     - Username
     - Password
 
-    Includes styled input fields for a consistent user interface.
+    Inherits from Django's AuthenticationForm and BaseForm.
+    """
+
+    pass
+
+
+class FollowUserForm(BaseForm):
+    """
+    Form to enter the username of a user to follow.
+
+    Field:
+    - username: The username of the user to follow (CharField).
+
+    Inherits from BaseForm.
+    """
+
+    username = forms.CharField(label="Nom d'utilisateur", max_length=150)
+
+
+class BlockUserForm(forms.Form):
+    """
+    Form to enter the username of a user to block.
+
+    Field:
+    - username: The username of the user to block (CharField).
+
+    Inherits from Django's base Form class.
     """
 
     username = forms.CharField(
+        label="",
+        max_length=150,
         widget=forms.TextInput(attrs={
-            'placeholder': "Nom d'utilisateur",
-            'style': 'text-align: center; color: #666;',
-        })
-    )
-
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': "Mot de passe",
-            'style': 'text-align: center; color: #666;',
+            'placeholder': "Nom d'utilisateur"
         })
     )

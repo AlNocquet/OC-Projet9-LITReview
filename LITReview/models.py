@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
@@ -79,3 +80,41 @@ class UserFollows(models.Model):
             # Contrainte : Ne peut suivre un autre utilisateur qu'une seule fois ;
 
 
+
+class BlockedUser(models.Model):
+
+    """
+    Model representing a blocking relationship between users.
+
+    Fields:
+    - user: the blocker (who initiates the block).
+    - blocked_user: the user being blocked.
+
+    Notes:
+    - user.blocker.all() returns all users that the user has blocked.
+    - user.blocked_by.all() returns all users who have blocked this user.
+
+    Constraints:
+    - Each user can block another user only once (unique_together).
+    - Blocking is unidirectional: being blocked does not prevent the blocker from being followed unless additional logic is implemented.
+
+    Deletion behavior:
+    - If a user is deleted, all related block records are also removed (on_delete=CASCADE).
+    """
+        
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='blocker'
+    )
+    blocked_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='blocked_by'
+    )
+
+    class Meta:
+        unique_together = ('user', 'blocked_user')
+
+    def __str__(self):
+        return f"{self.user.username} a bloqué {self.blocked_user.username}"
