@@ -35,6 +35,10 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+Once the server is running, open the application in your browser at:
+http://127.0.0.1:8000/
+
+
 ## USAGE
 
 The platform allows users to:
@@ -42,6 +46,7 @@ The platform allows users to:
 - Publish or request reviews of books or articles (called "tickets")
 - Write a review for any ticket (self-created or by other users)
 - Follow or unfollow other users
+- Block or unblock users to prevent interactions
 - Access a personalized feed showing:
   - Their own posts
   - Posts from followed users (tickets and reviews)
