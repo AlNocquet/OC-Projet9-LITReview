@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
     'LITReview', # Ajout
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = [ # Détecter la langue de l'utilisateur et appliquer les fichiers traduits
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware', # Ajout + dossier racine projet stockage traductions / django-admin makemessages -l fr
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -104,13 +106,18 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr' # Modifs pour champs
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = True # Activer le système de traduction de Django
 
 USE_TZ = True
+
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
 
 
 # Static files (CSS, JavaScript, Images)
