@@ -118,3 +118,12 @@ class BlockedUser(models.Model):
 
     def __str__(self):
         return f"{self.user.username} a bloqué {self.blocked_user.username}"
+    
+    @classmethod
+    def block(cls, user, target_user):
+        """
+        Blocks target_user on behalf of user by removing any mutual follows and creating the block relation.
+        """
+        UserFollows.objects.filter(user=user, followed_user=target_user).delete()
+        UserFollows.objects.filter(user=target_user, followed_user=user).delete()
+        cls.objects.get_or_create(user=user, blocked_user=target_user)

@@ -1,12 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import BlockedUser 
 
 from .forms import SignUpForm, ProfileUpdateForm, LoginForm, FollowUserForm, BlockUserForm
 from .models import UserFollows
+
+from .models import UserFollows, BlockedUser
+from .forms import FollowUserForm, BlockUserForm
+
 
 # Create your views here.
 
@@ -140,20 +144,26 @@ def delete_account(request):
 
 @login_required
 def subscriptions_view(request):
-
     """
-    View to manage subscriptions and user blocking from a single page.
+    Handles user subscriptions and blocking logic from a unified interface.
 
-    - GET: Displays forms for following and blocking users,
-        along with lists of followed users, followers, and blocked users.
-    - POST: Processes either follow or block form based on the submitted data.
+    GET:
+    - Renders the subscriptions page with:
+      - A form to follow users
+      - A form to block users
+      - Lists of followed users, followers, and blocked users
 
-    Context:
-    - form: FollowUserForm for subscribing to users
-    - block_form: BlockUserForm for blocking users
-    - followed_users: users the current user is following
-    - followers: users following the current user
-    - blocked_users: users the current user has blocked
+    POST:
+    - Processes submitted forms:
+      - Follows a user if allowed (not already followed or blocked)
+      - Blocks a user and removes any existing follow relationships
+
+    Context variables:
+    - form: FollowUserForm (for following a user)
+    - block_form: BlockUserForm (for blocking a user)
+    - followed_users: QuerySet of users the current user is following
+    - followers: QuerySet of users who follow the current user
+    - blocked_users: QuerySet of users the current user has blocked
 
     Template:
     - auth/subscriptions.html
@@ -167,34 +177,36 @@ def subscriptions_view(request):
         if 'block' in request.POST:
             block_form = BlockUserForm(request.POST)
             if block_form.is_valid():
-                username_to_block = block_form.cleaned_data['username']
+                username_to_block = block_form.cleaned_data['username'].strip()
                 try:
-                    to_block = User.objects.get(username=username_to_block)
+                    to_block = User.objects.get(username__iexact=username_to_block)
                     if to_block == user:
                         messages.error(request, "Tu ne peux pas te bloquer toi-même.")
                     elif BlockedUser.objects.filter(user=user, blocked_user=to_block).exists():
-                        messages.warning(request, f"{username_to_block} est déjà bloqué.")
+                        messages.warning(request, f"{to_block.username} est déjà bloqué.")
                     else:
-                        UserFollows.objects.filter(user=user, followed_user=to_block).delete()
-                        UserFollows.objects.filter(user=to_block, followed_user=user).delete()
-                        BlockedUser.objects.create(user=user, blocked_user=to_block)
-                        messages.success(request, f"{username_to_block} a été bloqué.")
+                        BlockedUser.block(user, to_block)
+                        messages.success(request, f"{to_block.username} a été bloqué.")
                         return redirect('subscriptions')
                 except User.DoesNotExist:
                     messages.error(request, "Cet utilisateur n'existe pas.")
         else:
             form = FollowUserForm(request.POST)
             if form.is_valid():
-                username_to_follow = form.cleaned_data['username']
+                username_to_follow = form.cleaned_data['username'].strip()
                 try:
-                    to_follow = User.objects.get(username=username_to_follow)
+                    to_follow = User.objects.get(username__iexact=username_to_follow)
                     if to_follow == user:
                         messages.error(request, "Tu ne peux pas te suivre toi-même.")
+                    elif BlockedUser.objects.filter(user=to_follow, blocked_user=user).exists():
+                        messages.error(request, f"Tu ne peux pas suivre {to_follow.username}.")
+                    elif BlockedUser.objects.filter(user=user, blocked_user=to_follow).exists():
+                        messages.error(request, f"Tu ne peux pas suivre {to_follow.username} tant que tu l'as bloqué.")
                     elif UserFollows.objects.filter(user=user, followed_user=to_follow).exists():
-                        messages.warning(request, f"Tu suis déjà {username_to_follow}.")
+                        messages.warning(request, f"Tu suis déjà {to_follow.username}.")
                     else:
                         UserFollows.objects.create(user=user, followed_user=to_follow)
-                        messages.success(request, f"Tu suis maintenant {username_to_follow}.")
+                        messages.success(request, f"Tu suis maintenant {to_follow.username}.")
                         return redirect('subscriptions')
                 except User.DoesNotExist:
                     messages.error(request, "Cet utilisateur n'existe pas.")
@@ -216,89 +228,89 @@ def subscriptions_view(request):
 @login_required
 def unfollow_view(request, user_id):
     """
-    View to unfollow a user.
+    Handles the action of unfollowing a user.
 
     - Only accessible via GET request.
-    - Deletes the UserFollows relationship between the logged-in user and the given user_id (if it exists).
+    - Removes the UserFollows relationship from the current user to the target user (if it exists).
 
     Parameters:
-    - user_id: ID of the user to unfollow.
+    - user_id: ID of the user to unfollow
+
+    Redirects:
+    - To 'subscriptions' with a success or error message
 
     Template:
     - auth/subscriptions.html
-
-    Redirects:
-    - To the 'subscriptions' page with a success or error message.
     """
 
     try:
         to_unfollow = User.objects.get(pk=user_id)
         UserFollows.objects.filter(user=request.user, followed_user=to_unfollow).delete()
         messages.success(request, f"Vous ne suivez plus {to_unfollow.username}.")
-
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
-
     return redirect('subscriptions')
 
 
 
 @login_required
 def unblock_user_view(request, user_id):
-
     """
-    View to unblock a user.
+    Handles the action of unblocking a user.
 
-    - Removes the BlockedUser relationship if it exists.
+    - Deletes the BlockedUser relationship if it exists.
 
     Parameters:
     - user_id: ID of the user to unblock
 
-    Template:
-    - auth/subscriptions.html
-
     Redirects:
     - To 'subscriptions' with a success or error message
+
+    Template:
+    - auth/subscriptions.html
     """
 
     try:
         to_unblock = User.objects.get(pk=user_id)
-        BlockedUser.objects.filter(user=request.user, blocked_user=to_unblock).delete()
-        messages.success(request, f"{to_unblock.username} a été débloqué.")
+        blocked_relation = BlockedUser.objects.filter(user=request.user, blocked_user=to_unblock)
+        if blocked_relation.exists():
+            blocked_relation.delete()
+            messages.success(request, f"{to_unblock.username} a été débloqué.")
+        else:
+            messages.info(request, f"{to_unblock.username} n'était pas bloqué.")
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
-
     return redirect('subscriptions')
+
 
 
 
 @login_required
 def block_from_follower_view(request, user_id):
     """
-    View to block a user directly from the followers list.
+    Handles the action of blocking a user directly from the followers list.
 
-    - Deletes any follow relationship in both directions.
+    - Removes any follow relationship between the two users.
     - Creates a BlockedUser entry if not already blocked.
 
     Parameters:
     - user_id: ID of the user to block
 
+    Redirects:
+    - To 'subscriptions' with a success or error message
+
     Template:
     - auth/subscriptions.html
-
-    Redirects:
-    - To the 'subscriptions' page with a success or error message.
     """
+
     try:
         to_block = User.objects.get(pk=user_id)
-        UserFollows.objects.filter(user=request.user, followed_user=to_block).delete()
-        UserFollows.objects.filter(user=to_block, followed_user=request.user).delete()
-        BlockedUser.objects.get_or_create(user=request.user, blocked_user=to_block)
+        BlockedUser.block(request.user, to_block)
         messages.success(request, f"{to_block.username} a été bloqué.")
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
-
     return redirect('subscriptions')
+
 
 
 
