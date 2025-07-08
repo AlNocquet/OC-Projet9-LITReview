@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.contrib import messages
+from django.db.models import Value, CharField
+
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.db.models import Q
+from itertools import chain
 
-from .forms import SignUpForm, ProfileUpdateForm, LoginForm, FollowUserForm, BlockUserForm
-from .models import UserFollows
-
-from .models import UserFollows, BlockedUser
-from .forms import FollowUserForm, BlockUserForm
+from .models import UserFollows, BlockedUser, Ticket, Review
+from .forms import SignUpForm, ProfileUpdateForm, LoginForm, FollowUserForm, BlockUserForm, TicketForm, ReviewForm, TicketReviewForm
 
 
 # Create your views here.
@@ -284,7 +284,6 @@ def unblock_user_view(request, user_id):
 
 
 
-
 @login_required
 def block_from_follower_view(request, user_id):
     """
@@ -313,12 +312,402 @@ def block_from_follower_view(request, user_id):
 
 
 
+@login_required
+def user_posts_view(request):
+    """
+    Displays the authenticated user's own posts (tickets and reviews).
+
+    - Fetches all tickets and reviews created by the user.
+    - Annotates each object with a content_type for display logic.
+    - Combines and sorts posts in reverse chronological order.
+
+    Template:
+    - feed/posts.html
+    """
+
+    tickets = Ticket.objects.filter(user=request.user).annotate(content_type=Value('TICKET', output_field=CharField()))
+    reviews = Review.objects.filter(user=request.user).annotate(content_type=Value('REVIEW', output_field=CharField()))
+
+    posts = sorted(
+        chain(tickets, reviews),
+        key=lambda post: post.time_created,
+        reverse=True
+    )
+
+    return render(request, 'feed/posts.html', {'posts': posts})
+
+
+@login_required
+def create_ticket_view(request):
+    """
+    Allows the user to create a new Ticket (review request).
+
+    - GET: display empty form
+    - POST: validate and save the new ticket
+    """
+
+    if request.method == 'POST':
+        form = TicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = form.save(commit=False) # infos ne venant pas du formulaire mais doivent être ajoutées côté serveur (user)
+            ticket.user = request.user
+            ticket.save()
+            messages.success(request, "Le ticket a bien été créé.")
+            return redirect('flux')
+        else:
+            messages.error(request, "Erreur : vérifiez le formulaire.")
+    else:
+        form = TicketForm()
+
+    return render(request, 'feed/form_page.html', {
+        'form': form,
+        'title': 'Créer un ticket', 
+        'has_file': True
+    })
+
+
+@login_required
+def create_review_response_view(request, ticket_id):
+    """
+    View allowing a user to write a review in response to an existing ticket.
+
+    Parameters:
+    - request: HTTP request object
+    - ticket_id: ID of the ticket to respond to
+
+    Behavior:
+    - GET: displays an empty ReviewForm
+    - POST: processes form submission
+        - if valid: associates the review with the current user and the ticket, saves it, and redirects to feed
+        - if invalid: redisplays the form with error messages
+
+    Access:
+    - Only available to authenticated users (login_required)
+
+    Template:
+    - feed/form_page.html
+
+    Redirects:
+    - Redirects to 'flux' upon successful review creation
+    """
+
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if Review.objects.filter(user=request.user, ticket=ticket).exists(): # l'utilisateur ne peut poster qu'une critique par ticket via l'url directe , si le .exists() est False, on peut reposter.
+        messages.warning(request, "Vous avez déjà rédigé une critique pour ce ticket.") # Btn enlevé mais si user tente /ticket/ticket_id/review/ → warning
+        return redirect('flux')
+     
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.ticket = ticket
+            review.save()
+            messages.success(request, "Votre critique a été publiée.")
+            return redirect('flux')
+    else:
+        form = ReviewForm()
+
+    return render(request, 'feed/form_page.html', {
+        'form': form,
+        'title': f'Critiquer : {ticket.title}',
+        'has_file': False
+    })
+
+
+@login_required
+def create_ticket_and_review_view(request):
+    """
+    View allowing the user to create both a Ticket and an associated Review in a single step.
+
+    Behavior:
+    - GET: displays an empty form with fields for both the ticket and the review
+    - POST: processes form submission
+        - if valid: creates and saves a new Ticket, then creates and saves a Review linked to that ticket
+        - if invalid: redisplays the form with error messages
+
+    Access:
+    - Only accessible to authenticated users (login_required)
+
+    Template:
+    - feed/form_page.html
+
+    Redirects:
+    - To 'flux' after successful creation of both objects
+    """
+
+    if request.method == 'POST':
+        form = TicketReviewForm(request.POST, request.FILES)
+        if form.is_valid():     
+            similar_tickets = Ticket.objects.filter(
+                title__iexact=form.cleaned_data['title']
+            ).exclude(user=request.user)
+
+            if similar_tickets.exists():
+                messages.info(request, "D'autres utilisateurs ont déjà demandé une critique sur ce livre.")
+
+            ticket = Ticket(
+                title=form.cleaned_data['title'],
+                description=form.cleaned_data['description'],
+                image=form.cleaned_data['image'],
+                user=request.user
+            )
+            ticket.save()
+
+            similar_tickets = Ticket.objects.filter(
+                title__iexact=form.cleaned_data['title']
+            ).exclude(user=request.user)
+
+            if similar_tickets.exists():
+                messages.info(request, "D'autres utilisateurs ont déjà demandé une critique sur ce livre.")
+
+            review = Review(
+                headline=form.cleaned_data['headline'],
+                body=form.cleaned_data['body'],
+                rating=form.cleaned_data['rating'],
+                user=request.user,
+                ticket=ticket
+            )
+            review.save()
+
+            messages.success(request, "Le ticket et la critique ont bien été créés.")
+            return redirect('flux')
+        else:
+            messages.error(request, "Erreur : vérifiez les champs du formulaire.")
+
+    else:
+        form = TicketReviewForm()
+
+    return render(request, 'feed/form_page.html', {
+        'form': form,
+        'title': 'Créer un ticket + critique',
+        'has_file': True
+    })
+
 
 @login_required
 def flux_view(request):
     """
-    Placeholder view for the feed page (flux).
-    Accessible uniquement si l'utilisateur est connecté.
+    Displays the user's feed, grouping tickets and their associated reviews into blocks.
+    Each block is sorted by the most recent activity (ticket creation or review creation).
+    Reviews are shown in reverse chronological order under each ticket.
+
+    Tickets from the user, followed users, and reviews in response to the user's tickets are included.
     """
 
-    return render(request, 'feed/flux.html')
+    # Liste des blocs (ticket + ses reviews) à afficher :
+    post_blocks = []
+
+    # Obtenir et combiner mes tickets + ceux de mes abonnements :
+    my_tickets = Ticket.objects.filter(user=request.user)
+
+    followed_users = UserFollows.objects.filter(user=request.user).values_list('followed_user', flat=True)
+    followed_tickets = Ticket.objects.filter(user__in=followed_users)
+
+    all_tickets = list(my_tickets) + list(followed_tickets)
+
+    # POUR CHAQUE TICKET : 
+    for ticket in all_tickets:
+        # "Ai-je déjà critiqué ce ticket ?" > {% if not post.has_review_by_user %}
+        ticket.has_review_by_user = ticket.review_set.filter(user=request.user).exists()
+
+        # All Reviews associées à ce ticket, y compris celles d'autres utilisateurs :
+        reviews = ticket.review_set.all()
+
+        # Filtrage :
+        filtered_reviews = [
+            review for review in reviews # Pour chaque review dans reviews, SI la condition est vraie, alors ajoute à la liste :
+            if review.user == request.user # mes propres reviews
+            or review.user in followed_users # les reviews faites par des gens que je suis
+            or ticket.user == request.user  # critiques en réponse à mes tickets
+        ]
+
+        # Tri antéchronologique des reviews sous le ticket : 
+        sorted_reviews = sorted(filtered_reviews, key=lambda r: r.time_created, reverse=True)
+
+        # Trouver la date la plus récente (max) entre la création du ticket et la/les création(s) de ses reviews :
+        last_activity = max(
+            [ticket.time_created] + [review.time_created for review in sorted_reviews] # extrait la valeur de time_created de sorted_reviews
+        )
+
+        # Construction d'un bloc {ticket + reviews + date} :
+        post_blocks.append({
+            'ticket': ticket,
+            'reviews': sorted_reviews,
+            'last_activity': last_activity
+        })
+
+    # Tri antéchronologique des blocs par date de dernière activité (ticket ou review) : 
+    sorted_blocks = sorted(post_blocks, key=lambda block: block['last_activity'], reverse=True)
+
+    return render(request, 'feed/flux.html', {'blocks': sorted_blocks})
+
+
+def edit_ticket_view(request, ticket_id): # convention de nommage automatique, Django lit l’URL (path)
+    """
+    View allowing a user to edit one of their own tickets.
+
+    Access:
+    - Only accessible to authenticated users (login_required).
+    - Only the author of the ticket can edit it.
+
+    Behavior:
+    - GET: displays a form pre-filled with the existing ticket data.
+    - POST: processes the submitted form to update the ticket.
+        - If valid: saves the changes and redirects to 'posts' page.
+        - If invalid: redisplays the form with error messages.
+
+    Parameters:
+    - request: HTTP request object
+    - ticket_id: ID of the ticket to be edited
+
+    Template:
+    - feed/form_page.html
+
+    Redirects:
+    - To 'posts' after successful modification
+    """
+
+    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user) # (primary K=ticket_id, user=request.user) → “je le cherche par ID, mais seulement s’il m’appartient”.
+
+    if request.method == 'POST':
+        form = TicketForm(request.POST, request.FILES, instance=ticket) # form = TicketForm(instance=ticket) → “je veux modifier ce ticket-là”
+        if form.is_valid(): # combinant les contraintes du Model et du Form
+            form.save()
+            messages.success(request, "Votre ticket a été modifié avec succès !")
+            return redirect('posts')
+        else:
+            messages.error(request, "Erreur lors de la modification du ticket.")
+    else:
+        form = TicketForm(instance=ticket)
+
+    return render(request, 'feed/form_page.html', {
+        'form': form,
+        'title': 'Modifier le ticket',
+        'has_file': True
+    })
+
+
+def delete_ticket_view(request, ticket_id):
+    """
+    View allowing a user to delete one of their own tickets.
+
+    Access:
+    - Only accessible to authenticated users (login_required).
+    - Only the author of the ticket can delete it.
+
+    Behavior:
+    - GET: displays a confirmation page asking the user to confirm deletion.
+    - POST: deletes the ticket and redirects to 'posts' with a success message.
+
+    Parameters:
+    - request: HTTP request object
+    - ticket_id: ID of the ticket to be deleted
+
+    Template:
+    - feed/confirm_delete.html
+
+    Redirects:
+    - To 'posts' after successful deletion
+    """    
+
+    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user) 
+
+    if request.method == "POST":
+        form = TicketForm(request.POST, request.FILES, instance=ticket) # form = TicketForm(instance=ticket) → “je veux delete ce ticket-là”
+        ticket.delete()   # Supprime ce ticket là
+        messages.success(request, "Votre ticket a été supprimé avec succès !")
+        return redirect('posts')
+    else:
+        form = TicketForm(instance=ticket)
+
+
+    return render(request, 'feed/confirm_delete.html', {
+        'ticket': ticket
+    })
+
+
+@login_required
+def edit_review_view(request, review_id):
+    """
+    View allowing a user to edit one of their own reviews.
+
+    Access:
+    - Only accessible to authenticated users (login_required).
+    - Only the author of the review can edit it.
+
+    Behavior:
+    - GET: displays a form pre-filled with the review's current content.
+    - POST: processes submitted form to update the review.
+        - If valid: saves changes and redirects to the 'posts' page.
+        - If invalid: redisplays the form with error messages.
+
+    Parameters:
+    - request: HTTP request object
+    - review_id: ID of the review to be edited
+
+    Template:
+    - feed/form_page.html
+
+    Redirects:
+    - To 'posts' after successful modification
+    """
+
+    review = get_object_or_404(Review, pk=review_id, user=request.user)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Votre critique a été modifiée avec succès.")
+            return redirect('posts')
+        else:
+            messages.error(request, "Erreur lors de la modification de votre critique.")
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, 'feed/form_page.html', {
+        'form': form,
+        'title': 'Modifier la critique',
+        'has_file': False
+    })
+
+
+@login_required
+def delete_review_view(request, review_id):
+    """
+    View allowing a user to delete one of their own reviews.
+
+    Access:
+    - Only accessible to authenticated users (login_required).
+    - Only the author of the review can delete it.
+
+    Behavior:
+    - GET: displays a confirmation page asking the user to confirm deletion.
+    - POST: deletes the review and redirects to the 'posts' page with a success message.
+
+    Parameters:
+    - request: HTTP request object
+    - review_id: ID of the review to be deleted
+
+    Template:
+    - feed/confirm_delete.html
+
+    Redirects:
+    - To 'posts' after successful deletion
+    """
+
+    review = get_object_or_404(Review, pk=review_id, user=request.user)
+
+    if request.method == "POST":
+        review.delete()
+        messages.success(request, "Votre critique a été supprimée avec succès.")
+        return redirect('posts')
+
+    return render(request, 'feed/confirm_delete.html', {
+        'object': review
+    })
+

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="form-page-container">
+  <h2>{{ title }}</h2>
+
+  <form method="post" {% if has_file %}enctype="multipart/form-data"{% endif %}>
+    {% csrf_token %}
+
+    {% for field in form %}
+      {% if field.name == 'rating' %}
+        <div class="form-field">
+          <h4 class="form-label">{{ field.label }}</h4>
+          <div class="star-rating">
+            <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+          </div>
+        </div>
+        
+      {% else %}
+        <div class="form-field">
+          <h4 class="form-label">{{ field.label }}</h4>
+          {{ field }}
+          {% if field.field.max_length %}
+            <small class="char-count" id="char-count-{{ field.name }}"></small>
+          {% endif %}
+          {% if field.errors %}
+            <div class="error">{{ field.errors }}</div>
+          {% endif %}
+          {% if field.help_text %}
+            <small class="helptext">{{ field.help_text }}</small>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="button-group">
+      <button type="submit" class="btn">Publier</button>
+    </div>
+  </form>
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("textarea, input[type='text']").forEach(function (field) {
+      const maxLength = field.getAttribute("maxlength");
+      const counter = document.getElementById("char-count-" + field.name);
+
+      if (maxLength && counter) {
+        const updateCount = () => {
+          const remaining = maxLength - field.value.length;
+          counter.textContent = `Reste ${remaining} caractères`;
+
+          if (remaining <= maxLength * 0.1) {
+            counter.style.color = "#e74c3c"; // rouge
+          } else if (remaining <= maxLength * 0.5) {
+            counter.style.color = "#e67e22"; // orange
+          } else {
+            counter.style.color = "#666"; // gris normal
+          }
+        };
+        field.addEventListener("input", updateCount);
+        updateCount(); // initialisation
+      }
+    });
+  });
+</script>
+
+{% endblock %}

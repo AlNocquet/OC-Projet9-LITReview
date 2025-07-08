@@ -9,13 +9,13 @@
 
     <title>LITReview</title>
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
-    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}">
-    <link rel="stylesheet" href="{% static 'css/divers.css' %}">
-    <link rel="stylesheet" href="{% static 'css/subscriptions.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/sign_up.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/divers.css' %}?v={{ version }}">
+    <link rel="stylesheet" href="{% static 'css/subscriptions.css' %}?v={{ version }}">
 </head>
 
 <body>
@@ -27,10 +27,10 @@
             <nav class="nav-box">
                 <ul>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'profile' %}">Mon Profil</a></li>
                         <li><a href="{% url 'flux' %}">Flux</a></li>
-                        <li><a href="#">Posts</a></li>
+                        <li><a href="{% url 'posts' %}">Posts</a></li>
                         <li><a href="{% url 'subscriptions' %}">Abonnements</a></li>
+                        <li><a href="{% url 'profile' %}">Mon Profil</a></li>
                         <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
                     {% endif %}
                 </ul>

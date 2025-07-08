@@ -1,0 +1,19 @@
+<!-- templates/partials/review_snippet.html - UNIQUEMENT LORSQUE REVIEW PUBLIÉE - PLUS UTILISÉ POUR LA CRÉATION -->
+
+
+<div class="review-snippet">
+    <h3>{{ post.headline }} ({{ post.rating }}/5)</h3>
+
+    <p>{{ post.body }}</p>
+
+    <p><small>Demande : {{ post.ticket.title }}</small></p>
+
+    <p><small>Posté par {{ post.user.username }} le {{ post.time_created|date:"d M Y à H:i" }}</small></p>
+
+    {% if post.user == request.user %}
+        <div class="review-actions">
+            <a href="{% url 'edit_review' post.id %}" class="btn">Modifier</a>
+            <a href="{% url 'delete_review' post.id %}" class="btn btn-supp">Supprimer</a>
+        </div>
+    {% endif %}
+</div>

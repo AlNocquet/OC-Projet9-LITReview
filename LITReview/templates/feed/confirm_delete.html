@@ -1,0 +1,16 @@
+<!-- templates/feed/confirm_delete.html -->
+
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Confirmer la suppression</h2>
+
+<p>Voulez-vous vraiment supprimer ce ticket ?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+    <a href="{% url 'posts' %}" class="btn">Annuler</a>
+</form>
+
+{% endblock %}

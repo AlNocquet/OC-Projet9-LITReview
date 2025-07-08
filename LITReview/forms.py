@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from .models import Ticket, Review
+
 
 class BaseForm(forms.Form):
     """
@@ -42,7 +44,6 @@ class BaseModelForm(forms.ModelForm):
                 'class': 'form-control'
             })
             field.label = ''
-
 
 
 class SignUpForm(BaseForm,UserCreationForm):
@@ -125,3 +126,59 @@ class BlockUserForm(forms.Form):
             'placeholder': "Nom d'utilisateur"
         })
     )
+
+
+class TicketForm(forms.ModelForm):
+    """
+    Form to create or update a Ticket.
+    Includes: title, description, image.
+    """
+
+    class Meta:
+        model = Ticket
+        fields = ['title', 'description', 'image']
+        labels = {
+            'title': 'Titre',
+            'description': 'Description',
+            'image': 'Image',
+        }
+
+
+class ReviewForm(forms.ModelForm):
+    """
+    Form to create or update a Review.
+    Includes: headline (title), body (comment), rating (0 - 5).
+    """
+    class Meta:
+            model = Review
+            fields = ['headline', 'body', 'rating']
+            labels = {
+                'headline': 'Titre',
+                'body': 'Texte',
+                'rating': 'Note',
+            }
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['rating'].widget = forms.NumberInput(attrs={
+                'min': 0,
+                'max': 5,
+                'step': 1
+            })
+
+    
+class TicketReviewForm(forms.Form):
+    """
+    Form to create Ticket AND Review.
+    Includes: title, description, image.
+    Includes: headline (title), body (comment), rating (0 - 5).
+    """
+    # Champs du ticket
+    title = forms.CharField(label="Titre du livre ou article", max_length=128)
+    description = forms.CharField(label="Description", widget=forms.Textarea, required=False)
+    image = forms.ImageField(label="Image", required=False)
+
+    # Champs de la critique
+    headline = forms.CharField(label="Titre de la critique", max_length=128)
+    body = forms.CharField(label="Texte", widget=forms.Textarea, required=False)
+    rating = forms.IntegerField(label="Note", min_value=0, max_value=5)

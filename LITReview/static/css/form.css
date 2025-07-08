@@ -1,0 +1,150 @@
+/*******************************
+ * FORM PAGES - Formulaires de création de ticket, critique, etc.
+ *******************************/
+
+
+/******************************* Base : mobile-first *******************************/
+
+.form-page-container {
+    background-color: rgb(255, 0, 242);
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Titre principal */
+.form-page-container h2 {
+    background-color: rgb(251, 255, 0);
+    color: #34495e;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Label personnalisé */
+.form-page-container .form-label {
+    background-color: rgb(251, 255, 0);
+    color: #34495e;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    margin: 0 0 4px 5px;
+    display: block;
+}
+
+.form-page-container .form-field input,
+.form-page-container .form-field select,
+.form-page-container .form-field textarea,
+.form-page-container .form-field input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    color: #666;
+    font-size: 15px;
+    text-align: left;
+}
+
+/* Empêcher redimensionnement textarea */
+.form-page-container textarea {
+    resize: none;
+    height: 120px;
+}
+
+/* Bloc de chaque champ */
+.form-page-container .form-field {
+    margin-bottom: 15px;
+    background-color: rgb(0, 255, 64);
+}
+
+/* Texte d’aide */
+.form-page-container .helptext {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Compteur de caractères */
+.char-count {
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+/* Groupe de boutons */
+.form-page-container .button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Boutons */
+.form-page-container .btn {
+    all: unset;
+    background-color: #18bc9c;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    min-width: 160px;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.form-page-container .btn:hover {
+    background-color: #149c82;
+}
+
+/* Ratings */
+.star-rating {
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    font-size: 26px;
+    user-select: none;
+}
+.star-rating input {
+    display: none;
+}
+.star-rating label {
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f5b301;
+}
+
+
+/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+@media (min-width: 768px) {
+    .form-page-container {
+        padding: 40px;
+    }
+
+    .form-page-container .button-group {
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .form-page-container .btn {
+        width: auto;
+    }
+}
