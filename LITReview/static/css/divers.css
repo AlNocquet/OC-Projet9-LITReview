@@ -109,10 +109,11 @@
     font-size: 14px;
     margin-top: 5px;
   }
-  
+
+
   
 /******************************* Tablet : à partir de 768px *******************************/
-  @media (min-width: 768px) {
+@media (min-width: 768px) {
     .auth-container {
       padding: 40px;
     }
@@ -136,11 +137,11 @@
     .btn-danger {
       width: auto;
     }
-  }
+}
   
   
 /******************************* Desktop : à partir de 1024px *******************************/
-  @media (min-width: 1024px) {
+@media (min-width: 1024px) {
     .auth-container {
       margin-top: 80px;
       padding: 50px;

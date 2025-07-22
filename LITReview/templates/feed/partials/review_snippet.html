@@ -2,18 +2,40 @@
 
 
 <div class="review-snippet">
-    <h3>{{ post.headline }} ({{ post.rating }}/5)</h3>
+
+    <div class="snippet-header">
+        <div class="left">
+            {% if post.user == request.user %}
+                <strong>Vous avez publié une critique !</strong>
+            {% else %}
+                <strong>{{ post.user.username }} a posté une critique !</strong>
+            {% endif %}
+        </div>
+        <div class="right">
+            <small>{{ post.time_created|date:"H:i, d M Y" }}</small>
+        </div>
+    </div>
+
+    <div class="review-header">
+        <h3>
+            {{ post.headline }} –
+            {% for i in "12345"|make_list %}
+                {% if forloop.counter <= post.rating %}
+                    ★
+                {% else %}
+                    ☆
+                {% endif %}
+            {% endfor %}
+        </h3>
+    </div>
 
     <p>{{ post.body }}</p>
 
-    <p><small>Demande : {{ post.ticket.title }}</small></p>
+    {% include 'feed/partials/ticket_snippet.html' with ticket=post.ticket hide_actions=True %}
 
-    <p><small>Posté par {{ post.user.username }} le {{ post.time_created|date:"d M Y à H:i" }}</small></p>
+    <div class="button-group">
+        <a href="{% url 'edit_review' post.id %}" class="post-btn">Modifier</a>
+        <a href="{% url 'delete_review' post.id %}" class="post-btn post-btn-delete">Supprimer</a>
+    </div>
 
-    {% if post.user == request.user %}
-        <div class="review-actions">
-            <a href="{% url 'edit_review' post.id %}" class="btn">Modifier</a>
-            <a href="{% url 'delete_review' post.id %}" class="btn btn-supp">Supprimer</a>
-        </div>
-    {% endif %}
 </div>

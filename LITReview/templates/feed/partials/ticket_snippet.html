@@ -1,6 +1,22 @@
 <!-- templates/partials/ticket_snippet.html -->
 
+
+
 <div class="ticket-snippet">
+
+    <div class="snippet-header">
+        <div class="left">
+            {% if ticket.user == request.user %}
+                <strong>Ticket - Vous</strong>
+            {% else %}
+                <strong>Ticket - {{ ticket.user.username }}</strong>
+            {% endif %}
+        </div>
+        <div class="right">
+            <small>{{ ticket.time_created|date:"H:i, d M Y" }}</small>
+        </div>
+    </div>
+
     <h3>{{ ticket.title }}</h3>
 
     {% if ticket.description %}
@@ -8,15 +24,16 @@
     {% endif %}
 
     {% if ticket.image %}
-        <img src="{{ ticket.image.url }}" alt="Image du ticket">
-    {% endif %}
-
-    <small>Posté par {{ ticket.user.username }} le {{ ticket.time_created|date:"d M Y à H:i" }}</small>
-
-    {% if ticket.user == request.user %}
-        <div class="ticket-actions">
-            <a href="{% url 'edit_ticket' ticket.id %}" class="btn">Modifier</a>
-            <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-supp">Supprimer</a>
+        <div class="post-image-wrapper">
+            <img src="{{ ticket.image.url }}" alt="Image du ticket">
         </div>
     {% endif %}
+
+    {% if ticket.user == request.user and not hide_actions %}
+        <div class="ticket-actions right-align">
+            <a href="{% url 'edit_ticket' ticket.id %}" class="post-btn">Modifier</a>
+            <a href="{% url 'delete_ticket' ticket.id %}" class="post-btn post-btn-delete">Supprimer</a>
+        </div>
+    {% endif %}
+
 </div>
