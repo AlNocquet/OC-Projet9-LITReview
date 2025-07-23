@@ -5,12 +5,12 @@
 {% block content %}
 <h2></h2>
 
-<div class="flux-actions">
+<div class="flux-btns">
     <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
     <a href="{% url 'create_ticket_review' %}" class="btn">Créer une critique</a>
 </div>
 
-<div class="post-list">
+<div class="flux-container">
   {% if blocks %}
     {% for block in blocks %}
         {# Affichage du ticket #}

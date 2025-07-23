@@ -1,5 +1,6 @@
 /******************************* Base : mobile-first *******************************/
 
+
 .signup-container {
     width: 100%;
     max-width: 500px;
@@ -90,6 +91,7 @@
   
 /******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
 @media (min-width: 768px) {
+
     .signup-container {
         padding: 40px;
       }

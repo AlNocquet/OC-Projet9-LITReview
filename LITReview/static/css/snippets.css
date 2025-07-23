@@ -1,0 +1,128 @@
+/******************************* Base : mobile-first *******************************/
+
+
+.snippet-review,
+.snippet-ticket {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.snippet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.snippet-header .left {
+    font-size: 15px;
+    color: #34495e;
+}
+
+.snippet-header .right small {
+    color: #888;
+    font-size: 13px;
+}
+
+.snippet-review .nested-ticket {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.snippet-review .snippet-actions,
+.snippet-ticket .snippet-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.snippet-btn {
+    all: unset;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #18bc9c;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.snippet-btn:hover {
+    background-color: #149c82;
+}
+
+.snippet-btn-delete {
+    background-color: #e74c3c;
+}
+
+.snippet-btn-delete:hover {
+    background-color: #c0392b;
+}
+
+.snippet-ticket .snippet-image-wrapper,
+.snippet-review .snippet-image-wrapper {
+    margin-top: 10px;
+}
+
+.snippet-ticket img,
+.snippet-review img {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}
+
+.snippet-ticket p,
+.snippet-review p {
+    text-align: justify;
+}
+
+/******************************* Desktop (≥768px) *******************************/
+@media (min-width: 768px) {
+    .snippet-review,
+    .snippet-ticket {
+        padding: 25px 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .snippet-header {
+        margin-bottom: 15px;
+    }
+
+    .snippet-ticket .snippet-image-wrapper,
+    .snippet-review .snippet-image-wrapper {
+        float: right;
+        margin: 10px 0 10px 20px;
+    }
+
+    .snippet-ticket img,
+    .snippet-review img {
+        width: 140px;
+        height: 190px;
+    }
+
+    .snippet-btn,
+    .snippet-btn-delete {
+        padding: 10px 25px;
+    }
+
+    .snippet-review .snippet-actions,
+    .snippet-ticket .snippet-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 20px;
+    }
+}

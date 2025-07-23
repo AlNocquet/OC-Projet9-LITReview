@@ -1,0 +1,59 @@
+
+/******************************* Base : mobile-first *******************************/
+
+
+.flux-container {
+  width: 90%;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+
+/* ========== Boutons flux spéciaux ========== */
+.flux-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.flux-btns a {
+  all: unset;
+  display: inline-block;
+  background-color: #18bc9c;
+  color: white;
+  font-weight: bolder;
+  font-size: 16px;
+  padding: 10px 20px;
+  width: 200px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.flux-btns a:hover {
+  background-color: #149c82;
+}
+
+
+/******************************* Tablet : ≥768px *******************************/
+@media (min-width: 768px) {
+  .flux-btns {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/******************************* Desktop : ≥1024px *******************************/
+@media (min-width: 1024px) {
+  .flux-container {
+    padding: 40px;
+  }
+}

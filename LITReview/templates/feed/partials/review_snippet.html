@@ -1,7 +1,7 @@
 <!-- templates/partials/review_snippet.html - UNIQUEMENT LORSQUE REVIEW PUBLIÉE - PLUS UTILISÉ POUR LA CRÉATION -->
 
 
-<div class="review-snippet">
+<div class="snippet-review">
 
     <div class="snippet-header">
         <div class="left">
@@ -33,9 +33,9 @@
 
     {% include 'feed/partials/ticket_snippet.html' with ticket=post.ticket hide_actions=True %}
 
-    <div class="button-group">
-        <a href="{% url 'edit_review' post.id %}" class="post-btn">Modifier</a>
-        <a href="{% url 'delete_review' post.id %}" class="post-btn post-btn-delete">Supprimer</a>
+    <div class="snippet-actions">
+        <a href="{% url 'edit_review' post.id %}" class="snippet-btn">Modifier</a>
+        <a href="{% url 'delete_review' post.id %}" class="snippet-btn snippet-btn-delete">Supprimer</a>
     </div>
 
 </div>

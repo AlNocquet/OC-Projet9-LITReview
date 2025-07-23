@@ -1,15 +1,14 @@
 <!-- templates/partials/ticket_snippet.html -->
 
 
-
-<div class="ticket-snippet">
+<div class="snippet-ticket">
 
     <div class="snippet-header">
         <div class="left">
             {% if ticket.user == request.user %}
-                <strong>Ticket - Vous</strong>
+                <strong>Par vous</strong>
             {% else %}
-                <strong>Ticket - {{ ticket.user.username }}</strong>
+                <strong>Par {{ ticket.user.username }}</strong>
             {% endif %}
         </div>
         <div class="right">
@@ -24,15 +23,15 @@
     {% endif %}
 
     {% if ticket.image %}
-        <div class="post-image-wrapper">
+        <div class="snippet-image-wrapper">
             <img src="{{ ticket.image.url }}" alt="Image du ticket">
         </div>
     {% endif %}
 
     {% if ticket.user == request.user and not hide_actions %}
-        <div class="ticket-actions right-align">
-            <a href="{% url 'edit_ticket' ticket.id %}" class="post-btn">Modifier</a>
-            <a href="{% url 'delete_ticket' ticket.id %}" class="post-btn post-btn-delete">Supprimer</a>
+        <div class="snippet-actions">
+            <a href="{% url 'edit_ticket' ticket.id %}" class="snippet-btn">Modifier</a>
+            <a href="{% url 'delete_ticket' ticket.id %}" class="snippet-btn snippet-btn-delete">Supprimer</a>
         </div>
     {% endif %}
 
