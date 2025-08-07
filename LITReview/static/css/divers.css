@@ -1,42 +1,32 @@
 /* =====================================================
-  divers.css — Feuille de style partagée centralisée
+  divers.css — Styles transversaux réutilisables
   -----------------------------------------------------
-  ✅ Ce fichier centralise uniquement les styles réellement utilisés
-  dans plusieurs pages, en évitant les redondances.
+  Pages concernées :
+  ✔ sign_up.html
+  ✔ form_page.html
+  ✔ subscriptions.html
+  ✔ confirm_delete.html
+  ✔ password_reset.html
+  ✔ password_change.html
+  ✔ login.html
+  ✔ delete_account.html
 
-  Pages concernées par les styles de ce fichier :
-  -----------------------------------------------------
-  ✔ sign_up.html             → boutons (.btn, .btn-primary)
-  ✔ form_page.html          → boutons + messages d’erreur (.btn, .error)
-  ✔ subscriptions.html      → boutons (.btn, .btn-delete)
-  ✔ confirm_delete.html     → boutons + layout (.btn, .btn-delete, .btn-primary, .confirm-actions)
+  Composants définis :
+  - .btn, .btn-primary, .btn-secondary, .btn-delete
+  - .error, .button-group
+  - .auth-container, .confirm-actions
 
-  ❌ Les pages suivantes ont leur propre CSS :
-  ✘ home.html                → home.css (.home-btn)
-  ✘ profile.html             → profile.css (.profile-btn)
-  ✘ posts.html               → posts.css (.post-btn)
-  ✘ flux.html                → flux.css (.flux-btn)
-
-  Convention :
-  -----------------------------------------------------
-  - Les classes `.btn`, `.btn-primary`, `.btn-delete`, `.btn-secondary` sont globales.
-  - Aucun conteneur de page ou layout spécifique ne doit être défini ici.
-  - Les boutons propres à une page doivent être définis dans son fichier CSS dédié.
-  - Responsive : mobile-first avec paliers tablette (768px) et bureau (1024px)
-  ===================================================== */
-
-  /* =============================================
-  .auth-container
-  -------------------------------------------------
-  Conteneur utilisé dans toutes les pages liées à la gestion de comptes utilisateur : 
-  connexion, inscription, récupération ou modification de mot de passe, etc. 
-  Sert à centrer et présenter le bloc principal dans ces formulaires.
-   ============================================= */
+  Règles :
+  - Pas de layout de page ici
+  - Pas de styles spécifiques à une page
+  - Responsive : mobile-first, +768px (tablette), +1024px (desktop)
+===================================================== */
 
 /******************************* Base : mobile-first *******************************/
 
 
-/* ========== Conteneur ages liées à la gestion de comptes utilisateur ========== */
+/* ========== Conteneur pages liées à la gestion de comptes utilisateur ========== */
+
 .auth-container {
   width: 90%;
   max-width: 500px;

@@ -35,4 +35,10 @@
         </div>
     {% endif %}
 
+    {% if show_critic_button and not ticket.has_review_by_user %}
+        <div class="snippet-actions">
+            <a href="{% url 'create_review_response' ticket.id %}" class="snippet-btn">Critiquer ce ticket</a>
+        </div>
+    {% endif %}
+
 </div>

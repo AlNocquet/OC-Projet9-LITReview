@@ -88,6 +88,35 @@
     text-align: justify;
 }
 
+/* Gestion à la ligne */
+.review-title-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Gestion à la ligne */
+.review-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Gestion à la ligne */
+.star-rating {
+    font-size: 18px;
+    white-space: nowrap;
+    direction: ltr;
+    margin-left: auto;
+}
+
+
 /******************************* Desktop (≥768px) *******************************/
 @media (min-width: 768px) {
     .snippet-review,
@@ -110,7 +139,7 @@
     .snippet-ticket img,
     .snippet-review img {
         width: 140px;
-        height: 190px;
+        height: 225px;
     }
 
     .snippet-btn,

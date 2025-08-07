@@ -1,12 +1,12 @@
 /*******************************
- * FORM PAGES - Formulaires de création de ticket, critique, etc.
+FORM PAGES - Formulaires de création de ticket, critique, etc.
+form.css s’occupe uniquement des structures spécifiques aux pages de formulaire : layout, champs, couleurs, etc.
  *******************************/
 
 
 /******************************* Base : mobile-first *******************************/
 
 .form-page-container {
-    background-color: rgb(255, 0, 242);
     width: 90%;
     max-width: 700px;
     margin: 40px auto;
@@ -14,11 +14,11 @@
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
+    background-color: white;
 }
 
 /* Titre principal */
 .form-page-container h2 {
-    background-color: rgb(251, 255, 0);
     color: #34495e;
     margin-bottom: 20px;
     text-align: center;
@@ -27,13 +27,20 @@
 
 /* Label personnalisé */
 .form-page-container .form-label {
-    background-color: rgb(251, 255, 0);
     color: #34495e;
     font-weight: bold;
     font-size: 16px;
     text-align: left;
     margin: 0 0 4px 5px;
     display: block;
+}
+
+/* Bloc de chaque champ */
+.form-page-container .form-field {
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100% !important;
 }
 
 .form-page-container .form-field input,
@@ -58,12 +65,6 @@
 .form-page-container textarea {
     resize: none;
     height: 120px;
-}
-
-/* Bloc de chaque champ */
-.form-page-container .form-field {
-    margin-bottom: 15px;
-    background-color: rgb(0, 255, 64);
 }
 
 /* Texte d’aide */
@@ -104,11 +105,13 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
 .form-page-container .btn:hover {
     background-color: #149c82;
 }
 
-/* Ratings */
+
+/* Ratings (étoiles) – utilisé dans le flux */
 .star-rating {
     direction: rtl;
     display: flex;
@@ -117,18 +120,61 @@
     font-size: 26px;
     user-select: none;
 }
+
 .star-rating input {
     display: none;
 }
+
 .star-rating label {
     color: #ccc;
     cursor: pointer;
     transition: color 0.2s;
 }
+
 .star-rating input:checked ~ label,
 .star-rating label:hover,
 .star-rating label:hover ~ label {
     color: #f5b301;
+}
+
+
+/* Ratings (cercles + chiffres) – formulaire uniquement */
+.rating-circle-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.rating-circle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.rating-circle input[type="radio"] {
+    display: none;
+}
+
+.rating-circle .circle {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #18bc9c;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    transition: background-color 0.2s ease;
+    background-color: white;
+}
+
+.rating-circle.active .circle {
+    background-color: #18bc9c;
+}
+
+.rating-circle input[type="radio"]:checked + .circle {
+    background-color: #18bc9c;
 }
 
 
@@ -146,5 +192,16 @@
 
     .form-page-container .btn {
         width: auto;
+    }
+}
+
+/* Espacement + taille cercles en desktop */
+@media (min-width: 1024px) {
+    .rating-circle-group {
+        gap: 20px;
+    }
+
+    .rating-circle {
+        font-size: 17px;
     }
 }

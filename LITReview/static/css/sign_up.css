@@ -28,11 +28,12 @@
   }
   
   /* Champs */
-  form div {
+
+  .auth-container div {
     width: 100%;
     max-width: 300px;
     margin-bottom: 15px;
-  }
+}
   
   form input {
     width: 100%;

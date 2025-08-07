@@ -1,41 +1,62 @@
+<!-- templates/feed/form_page.html -->
+
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="form-page-container">
+<div class="form-page-container {% if is_ticket %}ticket-form{% endif %}">
   <h2>{{ title }}</h2>
 
   <form method="post" {% if has_file %}enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
 
-    {% for field in form %}
-      {% if field.name == 'rating' %}
-        <div class="form-field">
-          <h4 class="form-label">{{ field.label }}</h4>
-          <div class="star-rating">
-            <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
-            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+    {# ----- Bloc CRITIQUE avec notes ----- #}
+    {% if is_review %}
+      {% for field in form %}
+        {% if field.name == 'headline' %}
+          <div class="form-field">
+            <h4 class="form-label">{{ field.label }}</h4>
+            {{ field }}
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
           </div>
-        </div>
-        
-      {% else %}
+
+          {# NOTES (ratings) entre le titre et le commentaire #}
+          <div class="form-field rating-field">
+            <h4 class="form-label">{{ form.rating.label }}</h4>
+            <div class="rating-circle-group">
+              {% for i in "12345"|make_list %}
+                <label class="rating-circle">
+                  <input type="radio" name="rating" value="{{ i }}">
+                  <span class="circle"></span> {{ i }}
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+        {% elif field.name != 'rating' %}
+          <div class="form-field">
+            <h4 class="form-label">{{ field.label }}</h4>
+            {{ field }}
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+            {% if field.help_text %}
+              <small class="helptext">{{ field.help_text }}</small>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    {# ----- Bloc TICKET sans notes ----- #}
+    {% else %}
+      {% for field in form %}
         <div class="form-field">
           <h4 class="form-label">{{ field.label }}</h4>
           {{ field }}
-          {% if field.field.max_length %}
-            <small class="char-count" id="char-count-{{ field.name }}"></small>
-          {% endif %}
-          {% if field.errors %}
-            <div class="error">{{ field.errors }}</div>
-          {% endif %}
+          {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
           {% if field.help_text %}
             <small class="helptext">{{ field.help_text }}</small>
           {% endif %}
         </div>
-      {% endif %}
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
 
     <div class="button-group">
       <button type="submit" class="btn">Publier</button>
@@ -43,9 +64,9 @@
   </form>
 </div>
 
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Compteur caractères 
     document.querySelectorAll("textarea, input[type='text']").forEach(function (field) {
       const maxLength = field.getAttribute("maxlength");
       const counter = document.getElementById("char-count-" + field.name);
@@ -56,18 +77,41 @@
           counter.textContent = `Reste ${remaining} caractères`;
 
           if (remaining <= maxLength * 0.1) {
-            counter.style.color = "#e74c3c"; // rouge
+            counter.style.color = "#e74c3c";
           } else if (remaining <= maxLength * 0.5) {
-            counter.style.color = "#e67e22"; // orange
+            counter.style.color = "#e67e22";
           } else {
-            counter.style.color = "#666"; // gris normal
+            counter.style.color = "#666";
           }
         };
         field.addEventListener("input", updateCount);
-        updateCount(); // initialisation
+        updateCount();
+      }
+    });
+
+  // activer les cercles selon la note
+    const ratingLabels = document.querySelectorAll(".rating-circle");
+    ratingLabels.forEach((label, index) => {
+      const input = label.querySelector("input");
+      input.addEventListener("change", () => {
+        ratingLabels.forEach((lbl, i) => {
+          if (i <= index) {
+            lbl.classList.add("active");
+          } else {
+            lbl.classList.remove("active");
+          }
+        });
+      });
+
+      // Si note déjà préremplie, réaffichage (ex: validation échouée - champ vide, image manquante…)
+      if (input.checked) { //bouton radio déjà sélectionné (input.checked)
+        for (let i = 0; i <= index; i++) {
+          ratingLabels[i].classList.add("active");
+        }
       }
     });
   });
+
 </script>
 
 {% endblock %}

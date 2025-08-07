@@ -14,20 +14,14 @@
   {% if blocks %}
     {% for block in blocks %}
         {# Affichage du ticket #}
-        {% include 'feed/partials/ticket_snippet.html' with ticket=block.ticket %}
-        
-        {# Affichage du bouton "Critiquer ce ticket" si non encore critiqué #}
-        {% if not block.ticket.has_review_by_user %}
-            <div class="ticket-actions">
-                <a href="{% url 'create_review_response' block.ticket.id %}" class="btn">Critiquer ce ticket</a>
-            </div>
-        {% endif %}
+        {% include 'feed/partials/ticket_snippet.html' with ticket=block.ticket show_critic_button=True %}
 
         {# Affichage des reviews liées à ce ticket, du plus récent au plus ancien #}
         {% for review in block.reviews %}
             {% include 'feed/partials/review_snippet.html' with post=review %}
         {% endfor %}
     {% endfor %}
+
   {% else %}
     <p>Aucun contenu pour l’instant. Suivez d'autres utilisateurs ou publiez une critique !</p>
   {% endif %}

@@ -344,6 +344,9 @@ def create_ticket_view(request):
 
     - GET: display empty form
     - POST: validate and save the new ticket
+
+    Template:
+    - feed/form_page.html
     """
 
     if request.method == 'POST':
@@ -358,11 +361,12 @@ def create_ticket_view(request):
             messages.error(request, "Erreur : vérifiez le formulaire.")
     else:
         form = TicketForm()
+        form.fields['description']
 
     return render(request, 'feed/form_page.html', {
+        'title': "Créer un ticket",
         'form': form,
-        'title': 'Créer un ticket', 
-        'has_file': True
+        'is_ticket': True, # déclencher l’inclusion CSS > Formulaire différent de ceux de connexion, etc.
     })
 
 
@@ -457,13 +461,6 @@ def create_ticket_and_review_view(request):
             )
             ticket.save()
 
-            similar_tickets = Ticket.objects.filter(
-                title__iexact=form.cleaned_data['title']
-            ).exclude(user=request.user)
-
-            if similar_tickets.exists():
-                messages.info(request, "D'autres utilisateurs ont déjà demandé une critique sur ce livre.")
-
             review = Review(
                 headline=form.cleaned_data['headline'],
                 body=form.cleaned_data['body'],
@@ -480,11 +477,13 @@ def create_ticket_and_review_view(request):
 
     else:
         form = TicketReviewForm()
+        form.fields['body'].label = "Commentaire"
 
     return render(request, 'feed/form_page.html', {
         'form': form,
-        'title': 'Créer un ticket + critique',
-        'has_file': True
+        'title': "Créer une critique",
+        'has_file': True,
+        'is_review': True,
     })
 
 
