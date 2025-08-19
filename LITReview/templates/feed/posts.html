@@ -3,20 +3,23 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="posts-container">
-    <h2>Vos publications</h2>
+<main>
+    <div class="posts-container">
+        <h2>Vos publications</h2>
 
-    <div class="post-list">
-        {% for post in posts %}
-        {% if post.content_type == 'TICKET' %}
-            {% include 'feed/partials/ticket_snippet.html' with ticket=post %}
-        {% elif post.content_type == 'REVIEW' %}
-            {% include 'feed/partials/review_snippet.html' with post=post %}
-        {% endif %}
-        {% empty %}
-        <p>Vous n’avez publié aucun billet ni critique pour le moment.</p>
-        {% endfor %}
+        <div class="post-list">
+            {% for post in posts %}
+            {% if post.content_type == 'TICKET' %}
+                {% include 'feed/partials/ticket_snippet.html' with ticket=post %}
+            {% elif post.content_type == 'REVIEW' %}
+                {% include 'feed/partials/review_snippet.html' with post=post %}
+            {% endif %}
+            {% empty %}
+            <p>Vous n’avez publié aucun billet ni critique pour le moment.</p>
+            {% endfor %}
+        </div>
     </div>
-</div>
+
+</main>
 
 {% endblock %}

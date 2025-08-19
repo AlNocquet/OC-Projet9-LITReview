@@ -1,35 +1,35 @@
 /*******************************
 FORM PAGES - Formulaires de création de ticket, critique, etc.
 form.css s’occupe uniquement des structures spécifiques aux pages de formulaire : layout, champs, couleurs, etc.
- *******************************/
+*******************************/
 
 
 /******************************* Base : mobile-first *******************************/
 
 .form-page-container {
-    width: 90%;
-    max-width: 700px;
+    width: 83%;
+    max-width: 767px;
     margin: 40px auto;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
     background-color: white;
+    margin-top: 3px;
 }
 
 /* Titre principal */
 .form-page-container h2 {
     color: #34495e;
-    margin-bottom: 20px;
+    margin-bottom: 35px;
     text-align: center;
-    font-size: 24px;
+    font-size:18px;
+    font-weight: bold;
 }
 
 /* Label personnalisé */
 .form-page-container .form-label {
     color: #34495e;
-    font-weight: bold;
-    font-size: 16px;
     text-align: left;
     margin: 0 0 4px 5px;
     display: block;
@@ -57,7 +57,7 @@ form.css s’occupe uniquement des structures spécifiques aux pages de formulai
     margin-left: auto;
     margin-right: auto;
     color: #666;
-    font-size: 15px;
+    font-size: 13px;
     text-align: left;
 }
 
@@ -97,27 +97,27 @@ form.css s’occupe uniquement des structures spécifiques aux pages de formulai
     all: unset;
     background-color: #18bc9c;
     color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    min-width: 160px;
     text-align: center;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 12px;
+    font-weight: bolder;
+    padding: 10px 5px;
+    width: 200px;
 }
 
 .form-page-container .btn:hover {
     background-color: #149c82;
 }
 
-
-/* Ratings (étoiles) – utilisé dans le flux */
+/* Ratings – utilisé dans le flux */
 .star-rating {
-    direction: rtl;
+    direction: ltr;
     display: flex;
     justify-content: center;
     gap: 5px;
-    font-size: 26px;
+    font-size: 14px;
     user-select: none;
 }
 
@@ -137,7 +137,6 @@ form.css s’occupe uniquement des structures spécifiques aux pages de formulai
     color: #f5b301;
 }
 
-
 /* Ratings (cercles + chiffres) – formulaire uniquement */
 .rating-circle-group {
     display: flex;
@@ -150,7 +149,7 @@ form.css s’occupe uniquement des structures spécifiques aux pages de formulai
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
 }
 
@@ -178,30 +177,25 @@ form.css s’occupe uniquement des structures spécifiques aux pages de formulai
 }
 
 
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+/******************************* Tablet + Desktop : ≥768px *******************************/
 @media (min-width: 768px) {
-    .form-page-container {
-        padding: 40px;
+
+    /* Ratings étoiles */
+    .star-rating {
+        font-size: 23px;
     }
 
-    .form-page-container .button-group {
-        flex-direction: row;
-        justify-content: center;
-        gap: 20px;
-    }
-
-    .form-page-container .btn {
-        width: auto;
-    }
-}
-
-/* Espacement + taille cercles en desktop */
-@media (min-width: 1024px) {
+    /* Ratings cercles + chiffres plus larges */
     .rating-circle-group {
-        gap: 20px;
+        gap: 18px;
     }
 
     .rating-circle {
-        font-size: 17px;
+        font-size: 16px;
+    }
+
+    /* Boutons */
+    .form-page-container .btn {
+        font-size: 14px;
     }
 }

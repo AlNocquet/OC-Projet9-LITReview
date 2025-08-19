@@ -137,10 +137,9 @@ class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
         fields = ['title', 'description', 'image']
-        labels = {
-            'title': 'Titre',
-            'description': 'Description',
-            'image': 'Image',
+        widgets = {
+            'title': forms.TextInput(attrs={'maxlength': 128}),
+            'description': forms.Textarea(attrs={'maxlength': 2048}),
         }
 
 
@@ -150,13 +149,17 @@ class ReviewForm(forms.ModelForm):
     Includes: headline (title), body (comment), rating (0 - 5).
     """
     class Meta:
-            model = Review
-            fields = ['headline', 'body', 'rating']
-            labels = {
-                'headline': 'Titre',
-                'body': 'Texte',
-                'rating': 'Note',
-            }
+        model = Review
+        fields = ['headline', 'body', 'rating']
+        widgets = {
+            'headline': forms.TextInput(attrs={'maxlength': 128}),
+            'body': forms.Textarea(attrs={'maxlength': 8192}),
+        }
+        labels = {
+            'headline': 'Titre',
+            'body': 'Texte',
+            'rating': 'Note',
+        }
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -173,12 +176,29 @@ class TicketReviewForm(forms.Form):
     Includes: title, description, image.
     Includes: headline (title), body (comment), rating (0 - 5).
     """
-    # Champs du ticket
-    title = forms.CharField(label="Titre du livre ou article", max_length=128)
-    description = forms.CharField(label="Description", widget=forms.Textarea, required=False)
-    image = forms.ImageField(label="Image", required=False)
+
+     # Champs du ticket
+    title = forms.CharField(
+        label="Titre du livre ou article", max_length=128, required=True,
+        widget=forms.TextInput(attrs={'maxlength': 128})
+    )
+    description = forms.CharField(
+        label="Description", required=True,
+        widget=forms.Textarea(attrs={'maxlength': 2048})
+    )
+    image = forms.ImageField(
+        label="Image", required=False
+    )
 
     # Champs de la critique
-    headline = forms.CharField(label="Titre de la critique", max_length=128)
-    body = forms.CharField(label="Texte", widget=forms.Textarea, required=False)
-    rating = forms.IntegerField(label="Note", min_value=0, max_value=5)
+    headline = forms.CharField(
+        label="Titre de la critique", max_length=128, required=True,
+        widget=forms.TextInput(attrs={'maxlength': 128})
+    )
+    body = forms.CharField(
+        label="Commentaire", required=True,
+        widget=forms.Textarea(attrs={'maxlength': 8192})
+    )
+    rating = forms.IntegerField(
+        label="Note", min_value=0, max_value=5, required=True
+    )

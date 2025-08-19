@@ -1,45 +1,52 @@
 /******************************* Base : mobile-first *******************************/
 
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Espace AVANT le container principal */
+    margin-top: 3px; /* ajuste la valeur pour coller au header/nav */
+}
+
+main > .profile-container {
+    margin-top: 0;
+}
+
 .profile-container {
-  width: 100%;
-  max-width: 500px;
+  width: 79%;
+  max-width: 767px;
   margin: 40px auto;
   background-color: white;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
+  font-size: 14px;
 }
 
 /* Titres */
 .profile-container h2 {
   color: #34495e;
-  margin-bottom: 10px;
+  margin-bottom: 36px;
   text-align: center;
 }
 
 .profile-container h4 {
   color: #34495e;
-  margin-bottom: 15px;
+  margin-bottom: 36px;
   text-align: center;
 }
 
-/* Formulaire */
-.profile-container form {
-  margin-top: 20px;
-  text-align: left;
-}
 
 /* Champs */
 .profile-container input,
 .profile-container select,
 .profile-container textarea {
-  width: 90%;
-  max-width: 300px;
+  width: 250px;
   padding: 10px;
+  margin-bottom: 15px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  margin-bottom: 5px;
   box-sizing: border-box;
   text-align: center;
   display: block;
@@ -77,15 +84,15 @@
   box-sizing: border-box;
   background-color: #18bc9c;
   color: white;
-  font-size: 16px;
-  padding: 10px 20px;
-  width: 100%;
-  max-width: 200px;
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
   display: block;
   transition: background-color 0.3s ease;
+  font-size: 12px;
+  font-weight: bolder;
+  padding: 10px 20px;
+  width: 200px;
 }
 
 /* Hover principal */
@@ -103,10 +110,23 @@
   background-color: #c0392b;
 }
 
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+h2 {
+    font-size: 18px;
+}
+
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
   .profile-container {
-    padding: 30px 40px;
+    padding: 25px 35px;
+  }
+
+    /* Champs */
+  .profile-container input,
+  .profile-container select,
+  .profile-container textarea {
+    width: 300px;
+    padding: 10px;
+    margin-bottom: 25px;
   }
 
   .profile-container .button-group {
@@ -118,6 +138,11 @@
   .profile-container button,
   .profile-container .btn,
   .profile-container .btn-delete {
-    width: auto;
+    font-size: 14px;
   }
+
+  h2 {
+      font-size: 20px;
+  }
+
 }

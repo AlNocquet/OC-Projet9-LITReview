@@ -1,38 +1,63 @@
 /******************************* Base : mobile-first *******************************/
 
+main {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 3px; /* ton réglage actuel */
+    box-sizing: border-box;
+}
+
+main > .subscriptions-container {
+    margin-top: 0;
+}
+
 .subscriptions-container {
-    width: 90%;
-    max-width: 700px;
-    margin: 40px auto;
+    width: 100%;
+    max-width: 350px;
     background-color: white;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     font-family: Arial, sans-serif;
+    margin: 0 auto;
 }
 
 /* Titres */
 .subscriptions-container h2,
 .subscriptions-container h4 {
     color: #34495e;
-    margin-bottom: 15px;
     text-align: center;
+    font-weight: bold;
+}
+
+.subscriptions-container h2 {
+    margin-bottom: 26px;
+}
+
+.subscriptions-container h4 {
+    margin-top: 26px;
+    margin-bottom: 8px;
 }
 
 /* Tableaux */
 .subscriptions-container table {
-    width: 100%;
-    margin-top: 10px;
+    width: 103%;
+    margin-top: 15px;
     border-collapse: collapse;
 }
 
 .subscriptions-container td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #dddddd5e;
+    padding: 4px 10px; /* 4px en vertical (haut/bas), 10px en horizontal (gauche/droite) */
 }
 
 .subscriptions-container td:last-child {
     text-align: right;
+    vertical-align: middle;
 }
 
 /* Boutons */
@@ -40,13 +65,14 @@
 .subscriptions-container .btn-delete {
     all: unset;
     display: inline-block;
-    padding: 8px 16px;
     border-radius: 4px;
-    font-size: 14px;
+    min-width: 90px;
     cursor: pointer;
     text-align: center;
-    margin-top: 5px;
-    min-width: 120px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: bolder;
+    padding: 8px 15px;
 }
 
 .subscriptions-container .btn {
@@ -67,7 +93,6 @@
     background-color: #c0392b;
 }
 
-
 /* Formulaire horizontal suivi utilisateur */
 .subscriptions-container .follow-form {
     display: flex;
@@ -79,31 +104,25 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 10px;
     width: 100%;
-    max-width: 97%;
+    max-width: 100%;
+    gap: 10px;
 }
-
 .subscriptions-container .follow-input-group input {
     flex-grow: 1;
-    margin-bottom: 0;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    text-align: left;
-    color: #666;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .subscriptions-container .follow-input-group input::placeholder {
     color: #aaa;
 }
 
-/* Indent, joliesse noms des utilisateurs */
 .subscriptions-container table td.username {
     padding-left: 30px;
     font-weight: 500;
     color: #2c3e50;
+    font-size: 12px;
 }
 
 .input-block::placeholder {
@@ -111,14 +130,57 @@
     text-align: center;
 }
 
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+.subscriptions-separator {
+    border: none;
+    border-top: 3px solid #e0e0e0;
+    margin: 0px;
+}
+
+h4 {
+    font-size: 14px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
     .subscriptions-container {
-        padding: 30px 40px;
+        padding: 25px 35px;
+        width: 180%;
+        max-width: 700px;
+        /*margin: 40px auto;*/
     }
-
+    .subscriptions-container table td.username {
+        font-size: 15px;
+    }
+    
+    /* Boutons */
     .subscriptions-container .btn,
     .subscriptions-container .btn-delete {
-        font-size: 15px;
+        font-size: 14px;
+    }
+
+    .subscriptions-container .follow-input-group {
+        max-width: 97%;
+        gap: 35px;
+    }
+    .subscriptions-container table {
+        width: 100%;
+    }
+    .subscriptions-container h4 {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .subscriptions-container h2 {
+        margin-bottom: 46px;
+    }
+    h2 {
+        font-size: 20px;
+    }
+    h4 {
+        font-size: 16px;
     }
 }

@@ -3,7 +3,7 @@
 
 .signup-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 310px;
     margin: 40px auto;
     background-color: white;
     padding: 30px;
@@ -27,7 +27,16 @@
     align-items: center;
   }
   
+
   /* Champs */
+  .form-field {
+      margin-bottom: 18px;
+      width: 80%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
 
   .auth-container div {
     width: 100%;
@@ -36,7 +45,7 @@
 }
   
   form input {
-    width: 100%;
+    width: 70%;
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #ccc;
@@ -63,8 +72,8 @@
     flex-direction: column-reverse; /* Inverse l’ordre : Retourner sous S'inscrire */
     align-items: center;
     gap: 10px;
-    width: 100%;
-    max-width: 300px;
+    width: 75%;
+    max-width: 250px;
     margin-top: 20px;
   }
   
@@ -81,6 +90,7 @@
     text-align: center;
     cursor: pointer;
     width: 100%;
+    max-width: 200px;
     transition: background-color 0.3s ease;
   }
   
@@ -90,17 +100,17 @@
 }
   
   
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
 
     .signup-container {
         padding: 40px;
+        max-width: 728px;
       }
     
     .button-group {
         flex-direction: row;
         justify-content: center;
-        gap: 20px;
         max-width: none;
     }
     
@@ -108,9 +118,14 @@
     .button-group .btn-return {
         max-width: 200px;
     }
-    
-      /* Décalage léger du bouton Retourner */
+
+    /* Décalage léger du bouton Retourner */
     .button-group .btn-return {
-        margin-top: 10px; 
+        margin-top: 0 auto; 
+    }
+
+      /* Champs */
+    .form-field {
+        width: 55%;
     }
 }

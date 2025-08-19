@@ -1,9 +1,20 @@
 /******************************* Base : mobile-first *******************************/
 
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Espace AVANT le container principal */
+    margin-top: 3px; /* ajuste la valeur pour coller au header/nav */
+}
+
+main > .posts-container {
+    margin-top: 0;
+}
 
 .posts-container {
-    width: 90%;
-    max-width: 700px;
+    width: 83%;
+    max-width: 767px;
     margin: 40px auto;
     background-color: white;
     padding: 30px;
@@ -12,16 +23,41 @@
     font-family: Arial, sans-serif;
 }
 
-.posts-container h2 {
+/* Styles communs aux titres */
+.posts-container h2,
+.posts-container h4 {
     color: #34495e;
-    margin-bottom: 15px;
     text-align: center;
+    font-weight: bold;
+}
+
+/* Espacement spécifique pour chaque niveau de titre */
+.posts-container h2 {
+    margin-bottom: 46px;
+}
+
+.posts-container h4 {
+    margin-top: 20px;
+
+}
+
+h4 {
+    font-size: 14px;
+}
+
+h2 {
+    font-size: 18px;
 }
 
 
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
     .posts-container {
-        padding: 40px 50px;
+        padding: 25px 35px;
     }
+
+    h2 {
+        font-size: 18px;
+    }
+
 }

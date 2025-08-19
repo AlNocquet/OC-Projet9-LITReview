@@ -1,13 +1,22 @@
 <!-- templates/feed/form_page.html -->
 
+
 {% extends 'base.html' %}
 {% block content %}
 
 <div class="form-page-container {% if is_ticket %}ticket-form{% endif %}">
   <h2>{{ title }}</h2>
 
+  {# Affiche le ticket au-dessus du formulaire si présent (ex: création/modif review) #}
+  {% if ticket %}
+    {% include 'feed/partials/ticket_snippet.html' with ticket=ticket hide_actions=True %}
+  {% endif %}
+
   <form method="post" {% if has_file %}enctype="multipart/form-data"{% endif %}>
     {% csrf_token %}
+    {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
 
     {# ----- Bloc CRITIQUE avec notes ----- #}
     {% if is_review %}
@@ -25,7 +34,8 @@
             <div class="rating-circle-group">
               {% for i in "12345"|make_list %}
                 <label class="rating-circle">
-                  <input type="radio" name="rating" value="{{ i }}">
+                  <input type="radio" name="rating" value="{{ i }}"
+                    {% if form.rating.value|stringformat:"s" == i|stringformat:"s" %}checked{% endif %}>
                   <span class="circle"></span> {{ i }}
                 </label>
               {% endfor %}
@@ -89,7 +99,7 @@
       }
     });
 
-  // activer les cercles selon la note
+    // activer les cercles selon la note
     const ratingLabels = document.querySelectorAll(".rating-circle");
     ratingLabels.forEach((label, index) => {
       const input = label.querySelector("input");
@@ -104,7 +114,7 @@
       });
 
       // Si note déjà préremplie, réaffichage (ex: validation échouée - champ vide, image manquante…)
-      if (input.checked) { //bouton radio déjà sélectionné (input.checked)
+      if (input.checked) {
         for (let i = 0; i <= index; i++) {
           ratingLabels[i].classList.add("active");
         }

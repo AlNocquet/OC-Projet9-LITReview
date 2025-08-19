@@ -3,6 +3,11 @@
 .home-container {
   padding: 20px;
   max-width: 100%;
+  font-size: 14px;
+}
+
+.home-container {
+    font-size: 14px;
 }
 
 .home-columns {
@@ -16,15 +21,15 @@
 .signup-section,
 .login-section {
   width: 100%;
-  max-width: 90%;
+  max-width: 300px;
   background: #fff;
-  padding: 20px;
+  padding: 40px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
+
 }
 
 /* Titres centrés + espace dessous */
@@ -32,13 +37,12 @@
 .login-section h2 {
   color: #34495e;
   text-align: center;
-  font-size: 20px;
-  margin-bottom: 20px;
+  font-size: 16px;
+  margin-bottom: 46px;
 }
 
 /* Bouton wrapper pour placement libre */
 .signup-button-wrapper {
-  margin-top: 75px; 
   display: flex;
   justify-content: center;
   width: 100%;
@@ -53,15 +57,16 @@
   justify-content: center; 
   background-color: #18bc9c;
   color: white;
-  font-size: 16px;
-  padding: 10px 20px;
+  padding: 10px 15px;
   width: 100%;
   max-width: 200px;
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
-  margin: 0 auto;
+  margin-top: 20px;
   transition: background-color 0.3s ease;
+  font-weight: bolder;
+  font-size: 14px;
 }
 
 .home-btn:hover {
@@ -80,7 +85,7 @@
 
 /* Champs input stylisés + textes centrés */
 .login-section input {
-  width: 90%;
+  width: 100%;
   max-width: 300px;
   padding: 10px;
   border-radius: 4px;
@@ -93,7 +98,7 @@
 }
 
 
-/******************************* Tablet : ≥768px / Desktop : ≥1024px *******************************/
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
   .home-container {
     min-height: 100vh;
@@ -121,6 +126,24 @@
   }
 
   .signup-button-wrapper {
-    margin-top: 132px; 
+    margin-top: 95px; 
   }
+
+  /* Formulaire */
+  .login-section input {
+    width: 250px;
+  }
+
+    /* Boutons Home */
+  .home-btn {
+    margin-top: 46px;
+  }
+
+  /* Titres centrés + espace dessous */
+  .signup-section h2,
+  .login-section h2 {
+    margin-bottom: 46px;
+    font-size: 18px;
+  }
+
 }

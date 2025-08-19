@@ -1,30 +1,36 @@
 <!-- templates/feed/flux.html -->
 
+
 {% extends 'base.html' %}
 
 {% block content %}
-<h2></h2>
 
-<div class="flux-btns">
-    <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
-    <a href="{% url 'create_ticket_review' %}" class="btn">Créer une critique</a>
-</div>
+  <div class="flux-btns">
+      <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
+      <a href="{% url 'create_ticket_review' %}" class="btn">Créer une critique</a>
+  </div>
 
-<div class="flux-container">
-  {% if blocks %}
-    {% for block in blocks %}
-        {# Affichage du ticket #}
-        {% include 'feed/partials/ticket_snippet.html' with ticket=block.ticket show_critic_button=True %}
-
-        {# Affichage des reviews liées à ce ticket, du plus récent au plus ancien #}
-        {% for review in block.reviews %}
-            {% include 'feed/partials/review_snippet.html' with post=review %}
-        {% endfor %}
-    {% endfor %}
-
-  {% else %}
-    <p>Aucun contenu pour l’instant. Suivez d'autres utilisateurs ou publiez une critique !</p>
-  {% endif %}
-</div>
+  <div class="flux-container">
+    {% if all_items %}
+      {% for item in all_items %}
+        {% if item.kind == 'ticket_block' %}
+          <div class="flux-block">
+            {% if item.reviews %}
+              {% for review in item.reviews %}
+                {% include 'feed/partials/review_snippet.html' with post=review %}
+              {% endfor %}
+            {% endif %}
+            {% include 'feed/partials/ticket_snippet.html' with ticket=item.ticket show_critic_button=True %}
+          </div>
+        {% elif item.kind == 'orphan_review' %}
+          <div class="flux-block">
+            {% include 'feed/partials/review_snippet.html' with post=item.review %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p>Aucun contenu pour l’instant. Suivez d'autres utilisateurs ou publiez une critique !</p>
+    {% endif %}
+  </div>
 
 {% endblock %}

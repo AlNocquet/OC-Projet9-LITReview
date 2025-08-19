@@ -19,7 +19,7 @@
     <h3>{{ ticket.title }}</h3>
 
     {% if ticket.description %}
-        <p>{{ ticket.description }}</p>
+        <p>{{ ticket.description|linebreaksbr }}</p>
     {% endif %}
 
     {% if ticket.image %}
@@ -30,8 +30,8 @@
 
     {% if ticket.user == request.user and not hide_actions %}
         <div class="snippet-actions">
-            <a href="{% url 'edit_ticket' ticket.id %}" class="snippet-btn">Modifier</a>
-            <a href="{% url 'delete_ticket' ticket.id %}" class="snippet-btn snippet-btn-delete">Supprimer</a>
+            <a href="{% url 'edit_ticket' ticket.id %}?next={{ request.path }}" class="snippet-btn">Modifier</a>
+            <a href="{% url 'delete_ticket' ticket.id %}?next={{ request.path }}" class="snippet-btn snippet-btn-delete">Supprimer</a>
         </div>
     {% endif %}
 

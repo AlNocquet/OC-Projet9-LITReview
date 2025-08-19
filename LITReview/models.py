@@ -7,7 +7,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Ticket(models.Model):
-
     """
     Model representing a review request (ticket).
 
@@ -20,15 +19,13 @@ class Ticket(models.Model):
     """
 
     title = models.CharField(max_length=128)
-    description = models.TextField(max_length=2048, blank=True)
+    description = models.TextField(max_length=2048)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    image =  models.ImageField (null=True, blank=True)
+    image = models.ImageField(blank=True, null=True)
     time_created = models.DateTimeField(auto_now_add=True)
 
 
-
 class Review(models.Model):
-
     """
     Model representing a review of a book or article.
 
@@ -43,18 +40,16 @@ class Review(models.Model):
 
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]) 
     headline = models.CharField(max_length=128)
-    body = models.TextField(max_length=8192, blank=True)
+    body = models.TextField(max_length=8192, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE) 
         # Enregistre l'ID d'un Ticket dans chaque Review
         # Permet d'accéder directement à l'objet Ticket via review.ticket
-        # Dde récupérer toutes les reviews associées via ticket.review_set
+        # De récupérer toutes les reviews associées via ticket.review_set
     time_created = models.DateTimeField(auto_now_add=True)
 
 
-
 class UserFollows(models.Model):
-
     """
     Model representing a follow relationship between users.
 
@@ -73,16 +68,19 @@ class UserFollows(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='following')
     followed_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='followed_by')
         # user.following.all() renverra tous les enregistrements de suivi où il est le follower ;
-        # user.followed_by.all() donnera tous les enregistrements où il est suivi.
+        # user.followed_by.all() donnera tous les enregistrements où il est suivi;
+        # CASCADE supprime tous les objets qui pointaient vers le ForeignKey ;
+        # settings.AUTH_USER_MODEL : 
 
     class Meta :
+        # Classe interne au modèle
         unique_together = ('user', 'followed_user') 
-            # Contrainte : Ne peut suivre un autre utilisateur qu'une seule fois ;
+            # Contrainte : Ne peut suivre un autre user utilisateur qu'une fois / erreur d’intégrité (IntegrityError) ;
+            # Requête SQL : UNIQUE (user_id, followed_user_id)
 
 
 
 class BlockedUser(models.Model):
-
     """
     Model representing a blocking relationship between users.
 

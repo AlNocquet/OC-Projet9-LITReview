@@ -1,6 +1,5 @@
 /******************************* Base : mobile-first *******************************/
 
-
 .snippet-review,
 .snippet-ticket {
     background-color: #fff;
@@ -17,14 +16,14 @@
     margin-bottom: 10px;
 }
 
-.snippet-header .left {
-    font-size: 15px;
+.snippet-header .left,
+.snippet-header .right {
+    font-size: 11px; 
     color: #34495e;
 }
 
-.snippet-header .right small {
+.snippet-header .right {
     color: #888;
-    font-size: 13px;
 }
 
 .snippet-review .nested-ticket {
@@ -41,14 +40,15 @@
     flex-wrap: nowrap;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .snippet-btn {
     all: unset;
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 10px 15px;
+    font-size: 12px;
     border-radius: 4px;
     text-align: center;
     cursor: pointer;
@@ -71,13 +71,14 @@
 
 .snippet-ticket .snippet-image-wrapper,
 .snippet-review .snippet-image-wrapper {
-    margin-top: 10px;
+    margin-left: 8px;
+    /*margin-top: 8px;*/
 }
 
 .snippet-ticket img,
 .snippet-review img {
     width: 120px;
-    height: 160px;
+    height: auto;
     object-fit: cover;
     border-radius: 4px;
     display: block;
@@ -86,6 +87,7 @@
 .snippet-ticket p,
 .snippet-review p {
     text-align: justify;
+    font-size: 12px;
 }
 
 /* Gestion à la ligne */
@@ -96,9 +98,8 @@
     flex-wrap: wrap;
 }
 
-/* Gestion à la ligne */
 .review-title {
-    font-size: 18px;
+    font-size: 13px; 
     font-weight: bold;
     color: #2c3e50;
     margin: 0;
@@ -108,50 +109,31 @@
     min-width: 0;
 }
 
-/* Gestion à la ligne */
-.star-rating {
-    font-size: 18px;
-    white-space: nowrap;
-    direction: ltr;
-    margin-left: auto;
-}
 
-
-/******************************* Desktop (≥768px) *******************************/
+/******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
-    .snippet-review,
-    .snippet-ticket {
-        padding: 25px 30px;
-        display: flex;
-        flex-direction: column;
+
+    .snippet-ticket p,
+    .snippet-review p {
+        padding-bottom: 20px;
     }
 
-    .snippet-header {
-        margin-bottom: 15px;
+    .review-title {
+        font-size: 16px;
     }
 
-    .snippet-ticket .snippet-image-wrapper,
-    .snippet-review .snippet-image-wrapper {
-        float: right;
-        margin: 10px 0 10px 20px;
+    .snippet-header .right {
+        font-size: 13px; 
     }
 
-    .snippet-ticket img,
-    .snippet-review img {
-        width: 140px;
-        height: 225px;
+    .snippet-header .left {
+        font-size: 12px; 
     }
 
-    .snippet-btn,
-    .snippet-btn-delete {
-        padding: 10px 25px;
+    .snippet-btn {
+        font-size: 13px;
+        font-weight: bolder;
     }
 
-    .snippet-review .snippet-actions,
-    .snippet-ticket .snippet-actions {
-        flex-direction: row;
-        justify-content: flex-end;
-        gap: 15px;
-        margin-top: 20px;
-    }
+
 }

@@ -28,7 +28,7 @@
 /* ========== Conteneur pages liées à la gestion de comptes utilisateur ========== */
 
 .auth-container {
-  width: 90%;
+  width: 85%;
   max-width: 500px;
   margin: 40px auto;
   background-color: white;
@@ -48,7 +48,7 @@
 .auth-container p {
   color: #555;
   margin-bottom: 20px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .auth-container form {
@@ -80,8 +80,8 @@
 .btn {
   all: unset;
   display: inline-block;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 70px;
+  font-size: 17px;
   border-radius: 4px;
   text-align: center;
   cursor: pointer;
@@ -119,8 +119,15 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: stretch;
+  align-items: center;
   margin-top: 20px;
+}
+
+.btn {
+  font-size: 12px;
+  font-weight: bolder;
+  padding: 10px 15px;
+  width: 140px;
 }
 
 /* ========== Messages d’erreur (form_page, signup) ========== */
@@ -140,7 +147,13 @@
   margin-top: 20px;
 }
 
-.confirm-container h2,
+.confirm-container h2 {
+  text-align: center;
+  color: #34495e;
+  text-align: center;
+  font-weight: bold;
+}
+
 .confirm-container p {
   text-align: center;
 }
@@ -164,6 +177,10 @@
     align-items: center;
   }
 
+  .btn {
+    font-size: 14px;
+  }
+
   .confirm-actions {
     flex-direction: row;
   }
@@ -183,8 +200,7 @@
   }
 
   .btn {
-    padding: 12px 26px;
-    font-size: 17px;
+    font-size: 14px;
   }
 
   .button-group {

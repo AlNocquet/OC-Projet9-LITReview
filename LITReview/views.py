@@ -352,7 +352,8 @@ def create_ticket_view(request):
     if request.method == 'POST':
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
-            ticket = form.save(commit=False) # infos ne venant pas du formulaire mais doivent être ajoutées côté serveur (user)
+            ticket = form.save(commit=False)
+                # infos ne venant pas du formulaire mais doivent être ajoutées côté serveur (user)
             ticket.user = request.user
             ticket.save()
             messages.success(request, "Le ticket a bien été créé.")
@@ -361,12 +362,12 @@ def create_ticket_view(request):
             messages.error(request, "Erreur : vérifiez le formulaire.")
     else:
         form = TicketForm()
-        form.fields['description']
-
+        
     return render(request, 'feed/form_page.html', {
         'title': "Créer un ticket",
         'form': form,
         'is_ticket': True, # déclencher l’inclusion CSS > Formulaire différent de ceux de connexion, etc.
+        'has_file': True,
     })
 
 
@@ -397,8 +398,10 @@ def create_review_response_view(request, ticket_id):
 
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if Review.objects.filter(user=request.user, ticket=ticket).exists(): # l'utilisateur ne peut poster qu'une critique par ticket via l'url directe , si le .exists() est False, on peut reposter.
-        messages.warning(request, "Vous avez déjà rédigé une critique pour ce ticket.") # Btn enlevé mais si user tente /ticket/ticket_id/review/ → warning
+    if Review.objects.filter(user=request.user, ticket=ticket).exists(): 
+        # l'utilisateur ne peut poster qu'une critique par ticket via l'url directe , si le .exists() est False, on peut reposter.
+        messages.warning(request, "Vous avez déjà rédigé une critique pour ce ticket.") 
+            # Btn enlevé mais si user tente /ticket/ticket_id/review/ → warning
         return redirect('flux')
      
     ticket = get_object_or_404(Ticket, pk=ticket_id)
@@ -418,7 +421,9 @@ def create_review_response_view(request, ticket_id):
     return render(request, 'feed/form_page.html', {
         'form': form,
         'title': f'Critiquer : {ticket.title}',
-        'has_file': False
+        'has_file': False,
+        'ticket': ticket,  # Ticket au dessus
+        'is_review': True,  # Flag dans le template
     })
 
 
@@ -490,59 +495,99 @@ def create_ticket_and_review_view(request):
 @login_required
 def flux_view(request):
     """
-    Displays the user's feed, grouping tickets and their associated reviews into blocks.
-    Each block is sorted by the most recent activity (ticket creation or review creation).
-    Reviews are shown in reverse chronological order under each ticket.
+    Displays the main feed for the authenticated user.
 
-    Tickets from the user, followed users, and reviews in response to the user's tickets are included.
+    Access:
+    - Only accessible to authenticated users (login_required).
+
+    Behavior:
+    - Displays tickets and reviews from followed users AND from the user themselves,
+      excluding those from blocked users.
+    - Groups each ticket with its associated reviews (reviews for the ticket displayed above),
+      with each block sorted in a globally reverse chronological order.
+    - Also displays orphan reviews (whose ticket is not visible) at the correct chronological position.
+
+    Details:
+    - Tickets and reviews are merged into a single homogeneous list,
+      each element being either a "ticket+reviews block" or an "orphan review."
+    - The feed thus allows users to view, in order, all relevant activity (tickets, reviews)
+      from followed people, while respecting privacy/blocking rules.
+
+    Template:
+    - feed/flux.html
+
+    Context:
+    - all_items: list of blocks to be rendered in the template.
     """
 
-    # Liste des blocs (ticket + ses reviews) à afficher :
-    post_blocks = []
+    user = request.user 
+        # Request : objet Django avec infos sur la requête en cours (URL, méthode, session, etc.)
+        # > @login_required, jamais AnonymousUser;
 
-    # Obtenir et combiner mes tickets + ceux de mes abonnements :
-    my_tickets = Ticket.objects.filter(user=request.user)
+    # 1. Récupérer les IDs des utilisateurs suivis :
+    followed_ids = set(
+        UserFollows.objects.filter(user=user).values_list('followed_user', flat=True)
+    )
+        # flat=True pour aplatir le tuple en liste simple [2, 5, 7] au lieu de [(2,), (5,), (7,)] ;
+        # set(...) convertit en ensemble élément uniques {2, 5, 7} 
+            # > éviter les doublons + faciliter les opérations ensemblistes.
 
-    followed_users = UserFollows.objects.filter(user=request.user).values_list('followed_user', flat=True)
-    followed_tickets = Ticket.objects.filter(user__in=followed_users)
+    # 2. Récupérer les IDs des utilisateurs bloqués
+    blocked_ids = set(
+        BlockedUser.objects.filter(user=user).values_list('blocked_user', flat=True)
+    )    
 
-    all_tickets = list(my_tickets) + list(followed_tickets)
+    # 3. Construire la liste des auteurs visibles (moi + suivis - bloqués)
+    visible_authors = (followed_ids | {user.id}) - blocked_ids
+        # | -> union (OU ensembliste) : les ids suivis + id de l’utilisateur
 
-    # POUR CHAQUE TICKET : 
-    for ticket in all_tickets:
-        # "Ai-je déjà critiqué ce ticket ?" > {% if not post.has_review_by_user %}
-        ticket.has_review_by_user = ticket.review_set.filter(user=request.user).exists()
+    # 4. Tickets visibles (auteurs visibles uniquement)
+    visible_tickets = Ticket.objects.filter(user__in=visible_authors).order_by('-time_created')
+        # QuerySet de Tickets visibles créés par moi ou mes suivis, triés par date décroissante
 
-        # All Reviews associées à ce ticket, y compris celles d'autres utilisateurs :
-        reviews = ticket.review_set.all()
+    # 5. Blocs ticket + reviews associées (reviews = postées par auteurs visibles)
+    ticket_blocks = []  
+        # liste blocs {ticket + reviews}
 
-        # Filtrage :
-        filtered_reviews = [
-            review for review in reviews # Pour chaque review dans reviews, SI la condition est vraie, alors ajoute à la liste :
-            if review.user == request.user # mes propres reviews
-            or review.user in followed_users # les reviews faites par des gens que je suis
-            or ticket.user == request.user  # critiques en réponse à mes tickets
-        ]
+    for t in visible_tickets:
+        r_qs = t.review_set.filter(user__in=visible_authors).order_by('-time_created')
+            # QuerySet Reviews visibles pour le ticket, tris décroissant
+            # review_set : généré automatiquement par Django, relation inverse entre Ticket et Review
+        t.has_review_by_user = r_qs.filter(user=user).exists() 
+            # chaque objet ticket un attribut has_review_by_user (booléen)
+            # > Vérifie si a déjà critiqué ce ticket (bouton “Critiquer” : show_critic_button True/False template)
 
-        # Tri antéchronologique des reviews sous le ticket : 
-        sorted_reviews = sorted(filtered_reviews, key=lambda r: r.time_created, reverse=True)
-
-        # Trouver la date la plus récente (max) entre la création du ticket et la/les création(s) de ses reviews :
-        last_activity = max(
-            [ticket.time_created] + [review.time_created for review in sorted_reviews] # extrait la valeur de time_created de sorted_reviews
-        )
-
-        # Construction d'un bloc {ticket + reviews + date} :
-        post_blocks.append({
-            'ticket': ticket,
-            'reviews': sorted_reviews,
-            'last_activity': last_activity
+            # Chaque élément de la liste ticket_blocks est un dictionnaire, pas de SQL
+        ticket_blocks.append({
+            'kind': 'ticket_block',   # étiquette de type
+            'ticket': t,              # objet Ticket (avec tous ses champs)
+            'reviews': list(r_qs),    # Convertion en liste Python d’objets Review (venant du QuerySet r_qs)
+            'time_created': t.time_created,  # clé de tri globale = date du ticket
         })
 
-    # Tri antéchronologique des blocs par date de dernière activité (ticket ou review) : 
-    sorted_blocks = sorted(post_blocks, key=lambda block: block['last_activity'], reverse=True)
 
-    return render(request, 'feed/flux.html', {'blocks': sorted_blocks})
+    # 6. Reviews orphelines (critiques des auteurs visibles, mais dont le ticket n'est pas visible)
+    orphan_reviews = Review.objects.filter(user__in=visible_authors).exclude(ticket__in=visible_tickets).order_by('-time_created')
+        # Reviews orphelines = critiques de mes suivis dont le ticket n’est PAS visible (auteur Ticket non suivi)
+
+    # Boucle de list comprehension avec dictionnaires
+    orphan_items = [{
+            'kind': 'orphan_review', # étiquette de type
+            'review': r, # l’objet Review complet (avec tous ses champs)
+            'time_created': r.time_created,  # clé de tri globale = date de la review
+        } for r in orphan_reviews] 
+            # une seule boucle, un seul tri, un seul type de structure (homogène avec ticket_blocks) pour template
+
+
+    # 7. Fusionner tous les items et trier antéchronologiquement
+    all_items = sorted(ticket_blocks + orphan_items, key=lambda it: it['time_created'], reverse=True)
+        #  Pour chaque élément it de la liste, prends sa valeur it['time_created'] comme clé de tri et ordonne du plus récent au plus ancien
+
+    # 8. Renvoyer au template
+    return render(request, 'feed/flux.html', {
+        'all_items': all_items
+    })
+
 
 
 def edit_ticket_view(request, ticket_id): # convention de nommage automatique, Django lit l’URL (path)
@@ -567,26 +612,28 @@ def edit_ticket_view(request, ticket_id): # convention de nommage automatique, D
     - feed/form_page.html
 
     Redirects:
-    - To 'posts' after successful modification
+    - To 'posts' or 'flux' after successful modification
     """
 
-    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user) # (primary K=ticket_id, user=request.user) → “je le cherche par ID, mais seulement s’il m’appartient”.
-
+    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user)
+        # (primary K=ticket_id, user=request.user) → “je le cherche par ID, mais seulement s’il m’appartient”.
+    next_url = request.POST.get('next') or request.GET.get('next') or 'posts'
     if request.method == 'POST':
-        form = TicketForm(request.POST, request.FILES, instance=ticket) # form = TicketForm(instance=ticket) → “je veux modifier ce ticket-là”
+        form = TicketForm(request.POST, request.FILES, instance=ticket)
+            # form = TicketForm(instance=ticket) → “je veux modifier ce ticket-là”
         if form.is_valid(): # combinant les contraintes du Model et du Form
             form.save()
             messages.success(request, "Votre ticket a été modifié avec succès !")
-            return redirect('posts')
+            return redirect(next_url)
         else:
             messages.error(request, "Erreur lors de la modification du ticket.")
     else:
         form = TicketForm(instance=ticket)
-
     return render(request, 'feed/form_page.html', {
         'form': form,
         'title': 'Modifier le ticket',
-        'has_file': True
+        'has_file': True,
+        'next': next_url,
     })
 
 
@@ -600,7 +647,7 @@ def delete_ticket_view(request, ticket_id):
 
     Behavior:
     - GET: displays a confirmation page asking the user to confirm deletion.
-    - POST: deletes the ticket and redirects to 'posts' with a success message.
+    - POST: deletes the ticket and redirects to 'posts' or 'flux' with a success message.
 
     Parameters:
     - request: HTTP request object
@@ -610,22 +657,19 @@ def delete_ticket_view(request, ticket_id):
     - feed/confirm_delete.html
 
     Redirects:
-    - To 'posts' after successful deletion
+    - To 'posts' or 'flux' after successful deletion
     """    
 
-    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user) 
-
+    ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user)
+    next_url = request.GET.get('next') or 'posts'
     if request.method == "POST":
-        form = TicketForm(request.POST, request.FILES, instance=ticket) # form = TicketForm(instance=ticket) → “je veux delete ce ticket-là”
-        ticket.delete()   # Supprime ce ticket là
+        ticket.delete()
         messages.success(request, "Votre ticket a été supprimé avec succès !")
-        return redirect('posts')
-    else:
-        form = TicketForm(instance=ticket)
-
-
+        return redirect(next_url)
+    
     return render(request, 'feed/confirm_delete.html', {
-        'ticket': ticket
+        'ticket': ticket,
+        'next': next_url,
     })
 
 
@@ -652,26 +696,27 @@ def edit_review_view(request, review_id):
     - feed/form_page.html
 
     Redirects:
-    - To 'posts' after successful modification
+    - To 'posts' or 'flux' after successful modification
     """
 
     review = get_object_or_404(Review, pk=review_id, user=request.user)
-
+    next_url = request.POST.get('next') or request.GET.get('next') or 'posts'
     if request.method == 'POST':
         form = ReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
             messages.success(request, "Votre critique a été modifiée avec succès.")
-            return redirect('posts')
+            return redirect(next_url)
         else:
             messages.error(request, "Erreur lors de la modification de votre critique.")
     else:
         form = ReviewForm(instance=review)
-
+        
     return render(request, 'feed/form_page.html', {
-        'form': form,
-        'title': 'Modifier la critique',
-        'has_file': False
+    'form': form,
+    'title': 'Modifier la critique',
+    'has_file': False,
+    'ticket': review.ticket, # Ticket au dessus
     })
 
 
@@ -696,17 +741,18 @@ def delete_review_view(request, review_id):
     - feed/confirm_delete.html
 
     Redirects:
-    - To 'posts' after successful deletion
+    - To 'posts' or 'flux' after successful deletion
     """
 
     review = get_object_or_404(Review, pk=review_id, user=request.user)
-
+    next_url = request.GET.get('next') or 'posts'
     if request.method == "POST":
         review.delete()
         messages.success(request, "Votre critique a été supprimée avec succès.")
-        return redirect('posts')
-
+        return redirect(next_url)
+    
     return render(request, 'feed/confirm_delete.html', {
-        'object': review
+        'object': review,
+        'next': next_url,
     })
 

@@ -1,6 +1,7 @@
 <!-- templates/partials/review_snippet.html - UNIQUEMENT LORSQUE REVIEW PUBLIÉE - PLUS UTILISÉ POUR LA CRÉATION -->
 <!--Les étoiles (note) sont affichées dans review_snippet.html-->
 
+
 <div class="snippet-review">
 
     <div class="snippet-header">
@@ -31,13 +32,18 @@
         </div>
     </div>
 
-    <p>{{ post.body }}</p>
+    <p>{{ post.body|linebreaksbr }}</p>
 
-    {% include 'feed/partials/ticket_snippet.html' with ticket=post.ticket hide_actions=True %}
+    {# On inclut le ticket associé SEULEMENT si le flag show_ticket_inline est passé (édition, détail) #}
+    {% if show_ticket_inline %}
+        {% include 'feed/partials/ticket_snippet.html' with ticket=post.ticket hide_actions=True %}
+    {% endif %}
 
     <div class="snippet-actions">
-        <a href="{% url 'edit_review' post.id %}" class="snippet-btn">Modifier</a>
-        <a href="{% url 'delete_review' post.id %}" class="snippet-btn snippet-btn-delete">Supprimer</a>
+        {% if post.user == request.user %}
+            <a href="{% url 'edit_review' post.id %}" class="snippet-btn">Modifier</a>
+            <a href="{% url 'delete_review' post.id %}?next={{ request.path }}" class="snippet-btn snippet-btn-delete">Supprimer</a>
+        {% endif %}
     </div>
 
 </div>

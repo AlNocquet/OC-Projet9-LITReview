@@ -10,8 +10,11 @@
 
     <form method="post" class="confirm-actions">
         {% csrf_token %}
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
         <button type="submit" class="btn btn-delete">Confirmer</button>
-        <a href="{% url 'posts' %}" class="btn btn-primary">Annuler</a>
+        <a href="{{ next|default:'posts' }}" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
 
