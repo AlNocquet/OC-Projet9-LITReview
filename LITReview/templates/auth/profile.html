@@ -29,7 +29,15 @@
         {% endif %}
       </div>
 
-      <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p>
+     <!-- MDP -->
+
+      <p>
+        <a href="{% url 'password_change' %}">Changer mon mot de passe</a>
+      </p>
+
+      <p>
+        <a href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+      </p>
 
       <!-- Boutons -->
       <div class="button-group">

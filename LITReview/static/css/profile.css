@@ -114,6 +114,15 @@ h2 {
     font-size: 18px;
 }
 
+
+.profile-container .btn-secondary {
+    background-color: #3498db;
+    color: white;
+}
+.profile-container .btn-secondary:hover {
+    background-color: #2980b9;
+}
+
 /******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {
   .profile-container {

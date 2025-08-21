@@ -29,7 +29,7 @@ class BaseForm(forms.Form):
 
 class BaseModelForm(forms.ModelForm):
     """
-    For ModelForms.
+    Custom base ModelForm for consistent field styling and placeholders.
     """
 
     def __init__(self, *args, **kwargs):
@@ -46,15 +46,10 @@ class BaseModelForm(forms.ModelForm):
             field.label = ''
 
 
-class SignUpForm(BaseForm,UserCreationForm):
+class SignUpForm(BaseForm, UserCreationForm):
     """
     Custom form for user registration.
-
-    Inherits from BaseForm and Django's UserCreationForm, and restricts visible fields to:
-    - Username
-    - Email
-    - Password
-    - Password confirmation
+    Fields: username, email (must be unique), password1, password2.
     """
 
     email = forms.EmailField(required=True)
@@ -63,23 +58,46 @@ class SignUpForm(BaseForm,UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("This email is already used by another account.")
+        return email
 
 
 class ProfileUpdateForm(BaseModelForm):
     """
-    Custom form for updating user profile information.
-
-    Fields:
-    - Username
-    - Email
-
-    Inherits from BaseModelForm.
+    Custom form for updating user profile.
+    Fields: username, email (must be unique among other users).
     """
 
     class Meta:
         model = User
         fields = ['username', 'email']
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
+            raise forms.ValidationError("This email is already used by another account.")
+        return email
+
+
+class ProfileUpdateForm(BaseModelForm):
+    """
+    Custom form for updating user profile information.
+    Fields: Username, Email.
+    """
+
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Cherche un autre user avec cet email
+        if User.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
+            raise forms.ValidationError("Cet email est déjà utilisé par un autre utilisateur.")
+        return email
 
 
 class LoginForm(BaseForm, AuthenticationForm):
