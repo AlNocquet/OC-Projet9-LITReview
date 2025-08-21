@@ -492,102 +492,61 @@ def create_ticket_and_review_view(request):
     })
 
 
+
 @login_required
 def flux_view(request):
     """
-    Displays the main feed for the authenticated user.
-
-    Access:
-    - Only accessible to authenticated users (login_required).
-
-    Behavior:
-    - Displays tickets and reviews from followed users AND from the user themselves,
-      excluding those from blocked users.
-    - Groups each ticket with its associated reviews (reviews for the ticket displayed above),
-      with each block sorted in a globally reverse chronological order.
-    - Also displays orphan reviews (whose ticket is not visible) at the correct chronological position.
-
-    Details:
-    - Tickets and reviews are merged into a single homogeneous list,
-      each element being either a "ticket+reviews block" or an "orphan review."
-    - The feed thus allows users to view, in order, all relevant activity (tickets, reviews)
-      from followed people, while respecting privacy/blocking rules.
-
-    Template:
-    - feed/flux.html
-
-    Context:
-    - all_items: list of blocks to be rendered in the template.
+    Vue flux LITReview : 
+    - Affiche les tickets d'utilisateur courant et des suivis (hors bloqués)
+    - Affiche toutes les reviews sur ces tickets (hors bloqués)
+    - Affiche les reviews orphelines faites par soi ou ses suivis (hors bloqués) sur tickets non visibles
+    - Ordre antéchronologique
     """
+    user = request.user
 
-    user = request.user 
-        # Request : objet Django avec infos sur la requête en cours (URL, méthode, session, etc.)
-        # > @login_required, jamais AnonymousUser;
+    # 1. Utilisateurs suivis et bloqués
+    followed_ids = set(UserFollows.objects.filter(user=user).values_list('followed_user', flat=True))
+    blocked_ids = set(BlockedUser.objects.filter(user=user).values_list('blocked_user', flat=True))
 
-    # 1. Récupérer les IDs des utilisateurs suivis :
-    followed_ids = set(
-        UserFollows.objects.filter(user=user).values_list('followed_user', flat=True)
-    )
-        # flat=True pour aplatir le tuple en liste simple [2, 5, 7] au lieu de [(2,), (5,), (7,)] ;
-        # set(...) convertit en ensemble élément uniques {2, 5, 7} 
-            # > éviter les doublons + faciliter les opérations ensemblistes.
+    # 2. Tous les tickets visibles (de soi ou des suivis, hors bloqués)
+    all_tickets = Ticket.objects.filter(
+        Q(user=user) | Q(user__in=followed_ids)
+    ).exclude(user__in=blocked_ids).order_by('-time_created')
 
-    # 2. Récupérer les IDs des utilisateurs bloqués
-    blocked_ids = set(
-        BlockedUser.objects.filter(user=user).values_list('blocked_user', flat=True)
-    )    
-
-    # 3. Construire la liste des auteurs visibles (moi + suivis - bloqués)
-    visible_authors = (followed_ids | {user.id}) - blocked_ids
-        # | -> union (OU ensembliste) : les ids suivis + id de l’utilisateur
-
-    # 4. Tickets visibles (auteurs visibles uniquement)
-    visible_tickets = Ticket.objects.filter(user__in=visible_authors).order_by('-time_created')
-        # QuerySet de Tickets visibles créés par moi ou mes suivis, triés par date décroissante
-
-    # 5. Blocs ticket + reviews associées (reviews = postées par auteurs visibles)
-    ticket_blocks = []  
-        # liste blocs {ticket + reviews}
-
-    for t in visible_tickets:
-        r_qs = t.review_set.filter(user__in=visible_authors).order_by('-time_created')
-            # QuerySet Reviews visibles pour le ticket, tris décroissant
-            # review_set : généré automatiquement par Django, relation inverse entre Ticket et Review
-        t.has_review_by_user = r_qs.filter(user=user).exists() 
-            # chaque objet ticket un attribut has_review_by_user (booléen)
-            # > Vérifie si a déjà critiqué ce ticket (bouton “Critiquer” : show_critic_button True/False template)
-
-            # Chaque élément de la liste ticket_blocks est un dictionnaire, pas de SQL
+    # 3. Pour chaque ticket du flux, toutes les reviews sauf celles des bloqués (auteur de la review)
+    ticket_blocks = []
+    for t in all_tickets:
+        reviews = t.review_set.exclude(user__in=blocked_ids).order_by('-time_created')
+        t.has_review_by_user = reviews.filter(user=user).exists()
         ticket_blocks.append({
-            'kind': 'ticket_block',   # étiquette de type
-            'ticket': t,              # objet Ticket (avec tous ses champs)
-            'reviews': list(r_qs),    # Convertion en liste Python d’objets Review (venant du QuerySet r_qs)
-            'time_created': t.time_created,  # clé de tri globale = date du ticket
+            'kind': 'ticket_block',
+            'ticket': t,
+            'reviews': list(reviews),
+            'time_created': t.time_created,
         })
 
+    # 4. Reviews orphelines = reviews faites par soi ou un suivi (hors bloqués) sur des tickets non visibles
+    visible_authors = (followed_ids | {user.id}) - blocked_ids
+    orphan_reviews = Review.objects.filter(
+        user__in=visible_authors
+    ).exclude(
+        ticket__in=all_tickets
+    ).exclude(
+        user__in=blocked_ids
+    ).order_by('-time_created')
 
-    # 6. Reviews orphelines (critiques des auteurs visibles, mais dont le ticket n'est pas visible)
-    orphan_reviews = Review.objects.filter(user__in=visible_authors).exclude(ticket__in=visible_tickets).order_by('-time_created')
-        # Reviews orphelines = critiques de mes suivis dont le ticket n’est PAS visible (auteur Ticket non suivi)
-
-    # Boucle de list comprehension avec dictionnaires
     orphan_items = [{
-            'kind': 'orphan_review', # étiquette de type
-            'review': r, # l’objet Review complet (avec tous ses champs)
-            'time_created': r.time_created,  # clé de tri globale = date de la review
-        } for r in orphan_reviews] 
-            # une seule boucle, un seul tri, un seul type de structure (homogène avec ticket_blocks) pour template
+        'kind': 'orphan_review',
+        'review': r,
+        'time_created': r.time_created,
+    } for r in orphan_reviews]
 
-
-    # 7. Fusionner tous les items et trier antéchronologiquement
+    # 5. Fusion et tri antéchronologique
     all_items = sorted(ticket_blocks + orphan_items, key=lambda it: it['time_created'], reverse=True)
-        #  Pour chaque élément it de la liste, prends sa valeur it['time_created'] comme clé de tri et ordonne du plus récent au plus ancien
 
-    # 8. Renvoyer au template
     return render(request, 'feed/flux.html', {
         'all_items': all_items
     })
-
 
 
 def edit_ticket_view(request, ticket_id): # convention de nommage automatique, Django lit l’URL (path)
