@@ -90,11 +90,11 @@
     text-align: center;
     cursor: pointer;
     width: 100%;
-    max-width: 200px;
+    max-width: 140px;
     transition: background-color 0.3s ease;
     font-weight: bolder;
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: 12px;
 }
 
   
@@ -121,6 +121,7 @@
     .button-group button,
     .button-group .btn-return {
         max-width: 200px;
+        font-size: 12px;
     }
 
     /* Décalage léger du bouton Retourner */
