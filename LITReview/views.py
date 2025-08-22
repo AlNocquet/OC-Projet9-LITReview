@@ -549,6 +549,7 @@ def flux_view(request):
     })
 
 
+@login_required
 def edit_ticket_view(request, ticket_id): # convention de nommage automatique, Django lit l’URL (path)
     """
     View allowing a user to edit one of their own tickets.
@@ -596,6 +597,7 @@ def edit_ticket_view(request, ticket_id): # convention de nommage automatique, D
     })
 
 
+@login_required
 def delete_ticket_view(request, ticket_id):
     """
     View allowing a user to delete one of their own tickets.

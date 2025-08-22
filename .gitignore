@@ -16,13 +16,14 @@ venv/
 *.swp
 
 # Django specific
-#db.sqlite3
-#/media/
+db.sqlite3
+media/
 staticfiles/
 
-# Migrations (keep __init__.py)
-#**/migrations/
-#!*/migrations/__init__.py
+# Migrations (keep them in Git for DB consistency)
+# (ne pas ignorer, sinon problème en prod)
+# **/migrations/
+# !*/migrations/__init__.py
 
 # Environment variables / secrets
 .env
@@ -36,4 +37,3 @@ Thumbs.db
 flake-report/
 coverage/
 htmlcov/
-
