@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,10 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'LITReview', # Ajout
+    'LITReview',  # Ajout
 ]
 
-MIDDLEWARE = [ # Détecter la langue de l'utilisateur et appliquer les fichiers traduits
+MIDDLEWARE = [
+    # Détecter la langue de l'utilisateur et appliquer les fichiers traduits
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,7 +48,8 @@ MIDDLEWARE = [ # Détecter la langue de l'utilisateur et appliquer les fichiers 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware', # Ajout + dossier racine projet stockage traductions / django-admin makemessages -l fr
+    'django.middleware.locale.LocaleMiddleware',  # Ajout, dossier racine projet stockage traductions.
+    # django-admin makemessages -l fr
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'LITReview' / 'templates'], # Ajout
+        'DIRS': [BASE_DIR / 'LITReview' / 'templates'],  # Ajout
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -83,7 +82,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -103,23 +101,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'fr' # Modifs pour champs
+LANGUAGE_CODE = 'fr'  # Modifs pour champs
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True # Activer le système de traduction de Django
+USE_I18N = True  # Activer le système de traduction de Django
 
 USE_TZ = True
-
 
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale')
 ]
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -133,9 +128,7 @@ STATICFILES_DIRS = [BASE_DIR / 'LITReview' / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Ajout mdp oublié
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Ajout mdp oublié
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

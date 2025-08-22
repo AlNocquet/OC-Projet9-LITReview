@@ -9,10 +9,10 @@ from django.db.models import Q
 from itertools import chain
 
 from .models import UserFollows, BlockedUser, Ticket, Review
-from .forms import SignUpForm, ProfileUpdateForm, LoginForm, FollowUserForm, BlockUserForm, TicketForm, ReviewForm, TicketReviewForm
-
-
-# Create your views here.
+from .forms import (
+    SignUpForm, ProfileUpdateForm, LoginForm, FollowUserForm,
+    BlockUserForm, TicketForm, ReviewForm, TicketReviewForm
+)
 
 
 def home_view(request):
@@ -21,13 +21,10 @@ def home_view(request):
     Redirects authenticated users to the feed ('flux').
     If the user is already authenticated, they are redirected to the main feed.
     """
-    
     if request.user.is_authenticated:
         return redirect('flux')
-    
-    form = LoginForm()  # Formulaire
+    form = LoginForm()
     return render(request, 'home.html', {'form': form})
-
 
 
 def signup_view(request):
@@ -39,20 +36,17 @@ def signup_view(request):
         - If valid: creates the user, logs them in, then redirects to the 'flux' page.
         - Otherwise: re-renders the form with error messages.
     """
-
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save() # crée l'utilisateur (Django impose (settings.py): mdp min 8 caractères; refuse mdp trop simples, mess. erreurs intégrés)
-            login(request, user) # connecte l'utilisateur immédiatement
-            return redirect('flux') # redirige vers la page principale
+            user = form.save()
+            login(request, user)
+            return redirect('flux')
     else:
         form = SignUpForm()
-    
     return render(request, 'auth/sign_up.html', {'form': form})
 
 
-        
 def login_view(request):
     """
     View handling user login.
@@ -60,10 +54,8 @@ def login_view(request):
     GET: displays login form
     POST: authenticates and logs user in
     """
-
     if request.user.is_authenticated:
         return redirect('flux')
-
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
@@ -74,9 +66,7 @@ def login_view(request):
             messages.error(request, "Nom d'utilisateur ou mot de passe invalide.")
     else:
         form = LoginForm()
-
     return render(request, 'home.html', {'form': form})
-
 
 
 def logout_view(request):
@@ -84,10 +74,8 @@ def logout_view(request):
     View handling user logout.
     Logs out and redirects to home page.
     """
-
     logout(request)
     return redirect('home')
-
 
 
 @login_required
@@ -98,7 +86,6 @@ def profile_view(request):
     - GET: Display current user's information (username, email).
     - POST: Update user's profile information (username, email).
     """
-
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -107,9 +94,7 @@ def profile_view(request):
             return redirect('profile')
     else:
         form = ProfileUpdateForm(instance=request.user)
-
     return render(request, 'auth/profile.html', {'form': form})
-
 
 
 @login_required
@@ -118,7 +103,8 @@ def delete_account(request):
     View allowing users to delete their own account.
 
     - GET: Displays a confirmation page asking the user if they really want to permanently delete their account.
-    - POST: Deletes the user's account permanently, logs out the user immediately after deletion, and redirects to the home page with a confirmation message.
+    - POST: Deletes the user's account permanently, logs out the user immediately after deletion, and redirects
+        to the home page with a confirmation message.
 
     Security measures:
     - Requires user to be authenticated (login required).
@@ -130,16 +116,13 @@ def delete_account(request):
     Redirects:
     - Redirects to 'home' after successful deletion.
     """
-        
     if request.method == "POST":
         user = request.user
-        logout(request) # Déconnecte immédiatement après suppression
-        user.delete()   # Supprime le compte utilisateur
+        logout(request)
+        user.delete()
         messages.success(request, "Votre compte a été supprimé avec succès.")
         return redirect('home')
-
     return render(request, 'auth/delete_account.html')
-
 
 
 @login_required
@@ -168,7 +151,6 @@ def subscriptions_view(request):
     Template:
     - auth/subscriptions.html
     """
-
     user = request.user
     form = FollowUserForm()
     block_form = BlockUserForm()
@@ -224,7 +206,6 @@ def subscriptions_view(request):
     })
 
 
-
 @login_required
 def unfollow_view(request, user_id):
     """
@@ -242,7 +223,6 @@ def unfollow_view(request, user_id):
     Template:
     - auth/subscriptions.html
     """
-
     try:
         to_unfollow = User.objects.get(pk=user_id)
         UserFollows.objects.filter(user=request.user, followed_user=to_unfollow).delete()
@@ -250,7 +230,6 @@ def unfollow_view(request, user_id):
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
     return redirect('subscriptions')
-
 
 
 @login_required
@@ -269,7 +248,6 @@ def unblock_user_view(request, user_id):
     Template:
     - auth/subscriptions.html
     """
-
     try:
         to_unblock = User.objects.get(pk=user_id)
         blocked_relation = BlockedUser.objects.filter(user=request.user, blocked_user=to_unblock)
@@ -281,7 +259,6 @@ def unblock_user_view(request, user_id):
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
     return redirect('subscriptions')
-
 
 
 @login_required
@@ -301,7 +278,6 @@ def block_from_follower_view(request, user_id):
     Template:
     - auth/subscriptions.html
     """
-
     try:
         to_block = User.objects.get(pk=user_id)
         BlockedUser.block(request.user, to_block)
@@ -309,7 +285,6 @@ def block_from_follower_view(request, user_id):
     except User.DoesNotExist:
         messages.error(request, "Utilisateur introuvable.")
     return redirect('subscriptions')
-
 
 
 @login_required
@@ -324,16 +299,13 @@ def user_posts_view(request):
     Template:
     - feed/posts.html
     """
-
     tickets = Ticket.objects.filter(user=request.user).annotate(content_type=Value('TICKET', output_field=CharField()))
     reviews = Review.objects.filter(user=request.user).annotate(content_type=Value('REVIEW', output_field=CharField()))
-
     posts = sorted(
         chain(tickets, reviews),
         key=lambda post: post.time_created,
         reverse=True
     )
-
     return render(request, 'feed/posts.html', {'posts': posts})
 
 
@@ -348,12 +320,10 @@ def create_ticket_view(request):
     Template:
     - feed/form_page.html
     """
-
     if request.method == 'POST':
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
             ticket = form.save(commit=False)
-                # infos ne venant pas du formulaire mais doivent être ajoutées côté serveur (user)
             ticket.user = request.user
             ticket.save()
             messages.success(request, "Le ticket a bien été créé.")
@@ -362,11 +332,10 @@ def create_ticket_view(request):
             messages.error(request, "Erreur : vérifiez le formulaire.")
     else:
         form = TicketForm()
-        
     return render(request, 'feed/form_page.html', {
         'title': "Créer un ticket",
         'form': form,
-        'is_ticket': True, # déclencher l’inclusion CSS > Formulaire différent de ceux de connexion, etc.
+        'is_ticket': True,
         'has_file': True,
     })
 
@@ -395,17 +364,10 @@ def create_review_response_view(request, ticket_id):
     Redirects:
     - Redirects to 'flux' upon successful review creation
     """
-
     ticket = get_object_or_404(Ticket, pk=ticket_id)
-
-    if Review.objects.filter(user=request.user, ticket=ticket).exists(): 
-        # l'utilisateur ne peut poster qu'une critique par ticket via l'url directe , si le .exists() est False, on peut reposter.
-        messages.warning(request, "Vous avez déjà rédigé une critique pour ce ticket.") 
-            # Btn enlevé mais si user tente /ticket/ticket_id/review/ → warning
+    if Review.objects.filter(user=request.user, ticket=ticket).exists():
+        messages.warning(request, "Vous avez déjà rédigé une critique pour ce ticket.")
         return redirect('flux')
-     
-    ticket = get_object_or_404(Ticket, pk=ticket_id)
-
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
@@ -417,13 +379,12 @@ def create_review_response_view(request, ticket_id):
             return redirect('flux')
     else:
         form = ReviewForm()
-
     return render(request, 'feed/form_page.html', {
         'form': form,
         'title': f'Critiquer : {ticket.title}',
         'has_file': False,
-        'ticket': ticket,  # Ticket au dessus
-        'is_review': True,  # Flag dans le template
+        'ticket': ticket,
+        'is_review': True,
     })
 
 
@@ -447,17 +408,14 @@ def create_ticket_and_review_view(request):
     Redirects:
     - To 'flux' after successful creation of both objects
     """
-
     if request.method == 'POST':
         form = TicketReviewForm(request.POST, request.FILES)
-        if form.is_valid():     
+        if form.is_valid():
             similar_tickets = Ticket.objects.filter(
                 title__iexact=form.cleaned_data['title']
             ).exclude(user=request.user)
-
             if similar_tickets.exists():
                 messages.info(request, "D'autres utilisateurs ont déjà demandé une critique sur ce livre.")
-
             ticket = Ticket(
                 title=form.cleaned_data['title'],
                 description=form.cleaned_data['description'],
@@ -465,7 +423,6 @@ def create_ticket_and_review_view(request):
                 user=request.user
             )
             ticket.save()
-
             review = Review(
                 headline=form.cleaned_data['headline'],
                 body=form.cleaned_data['body'],
@@ -474,16 +431,13 @@ def create_ticket_and_review_view(request):
                 ticket=ticket
             )
             review.save()
-
             messages.success(request, "Le ticket et la critique ont bien été créés.")
             return redirect('flux')
         else:
             messages.error(request, "Erreur : vérifiez les champs du formulaire.")
-
     else:
         form = TicketReviewForm()
         form.fields['body'].label = "Commentaire"
-
     return render(request, 'feed/form_page.html', {
         'form': form,
         'title': "Créer une critique",
@@ -492,28 +446,21 @@ def create_ticket_and_review_view(request):
     })
 
 
-
 @login_required
 def flux_view(request):
     """
-    Vue flux LITReview : 
+    Vue flux LITReview :
     - Affiche les tickets d'utilisateur courant et des suivis (hors bloqués)
     - Affiche toutes les reviews sur ces tickets (hors bloqués)
     - Affiche les reviews orphelines faites par soi ou ses suivis (hors bloqués) sur tickets non visibles
     - Ordre antéchronologique
     """
     user = request.user
-
-    # 1. Utilisateurs suivis et bloqués
     followed_ids = set(UserFollows.objects.filter(user=user).values_list('followed_user', flat=True))
     blocked_ids = set(BlockedUser.objects.filter(user=user).values_list('blocked_user', flat=True))
-
-    # 2. Tous les tickets visibles (de soi ou des suivis, hors bloqués)
     all_tickets = Ticket.objects.filter(
         Q(user=user) | Q(user__in=followed_ids)
     ).exclude(user__in=blocked_ids).order_by('-time_created')
-
-    # 3. Pour chaque ticket du flux, toutes les reviews sauf celles des bloqués (auteur de la review)
     ticket_blocks = []
     for t in all_tickets:
         reviews = t.review_set.exclude(user__in=blocked_ids).order_by('-time_created')
@@ -524,8 +471,6 @@ def flux_view(request):
             'reviews': list(reviews),
             'time_created': t.time_created,
         })
-
-    # 4. Reviews orphelines = reviews faites par soi ou un suivi (hors bloqués) sur des tickets non visibles
     visible_authors = (followed_ids | {user.id}) - blocked_ids
     orphan_reviews = Review.objects.filter(
         user__in=visible_authors
@@ -534,23 +479,21 @@ def flux_view(request):
     ).exclude(
         user__in=blocked_ids
     ).order_by('-time_created')
-
     orphan_items = [{
         'kind': 'orphan_review',
         'review': r,
         'time_created': r.time_created,
     } for r in orphan_reviews]
-
-    # 5. Fusion et tri antéchronologique
-    all_items = sorted(ticket_blocks + orphan_items, key=lambda it: it['time_created'], reverse=True)
-
-    return render(request, 'feed/flux.html', {
-        'all_items': all_items
-    })
+    all_items = sorted(
+        ticket_blocks + orphan_items,
+        key=lambda it: it['time_created'],
+        reverse=True
+    )
+    return render(request, 'feed/flux.html', {'all_items': all_items})
 
 
 @login_required
-def edit_ticket_view(request, ticket_id): # convention de nommage automatique, Django lit l’URL (path)
+def edit_ticket_view(request, ticket_id):
     """
     View allowing a user to edit one of their own tickets.
 
@@ -574,14 +517,11 @@ def edit_ticket_view(request, ticket_id): # convention de nommage automatique, D
     Redirects:
     - To 'posts' or 'flux' after successful modification
     """
-
     ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user)
-        # (primary K=ticket_id, user=request.user) → “je le cherche par ID, mais seulement s’il m’appartient”.
     next_url = request.POST.get('next') or request.GET.get('next') or 'posts'
     if request.method == 'POST':
         form = TicketForm(request.POST, request.FILES, instance=ticket)
-            # form = TicketForm(instance=ticket) → “je veux modifier ce ticket-là”
-        if form.is_valid(): # combinant les contraintes du Model et du Form
+        if form.is_valid():
             form.save()
             messages.success(request, "Votre ticket a été modifié avec succès !")
             return redirect(next_url)
@@ -619,15 +559,13 @@ def delete_ticket_view(request, ticket_id):
 
     Redirects:
     - To 'posts' or 'flux' after successful deletion
-    """    
-
+    """
     ticket = get_object_or_404(Ticket, pk=ticket_id, user=request.user)
     next_url = request.GET.get('next') or 'posts'
     if request.method == "POST":
         ticket.delete()
         messages.success(request, "Votre ticket a été supprimé avec succès !")
         return redirect(next_url)
-    
     return render(request, 'feed/confirm_delete.html', {
         'ticket': ticket,
         'next': next_url,
@@ -659,7 +597,6 @@ def edit_review_view(request, review_id):
     Redirects:
     - To 'posts' or 'flux' after successful modification
     """
-
     review = get_object_or_404(Review, pk=review_id, user=request.user)
     next_url = request.POST.get('next') or request.GET.get('next') or 'posts'
     if request.method == 'POST':
@@ -672,12 +609,11 @@ def edit_review_view(request, review_id):
             messages.error(request, "Erreur lors de la modification de votre critique.")
     else:
         form = ReviewForm(instance=review)
-        
     return render(request, 'feed/form_page.html', {
-    'form': form,
-    'title': 'Modifier la critique',
-    'has_file': False,
-    'ticket': review.ticket, # Ticket au dessus
+        'form': form,
+        'title': 'Modifier la critique',
+        'has_file': False,
+        'ticket': review.ticket,
     })
 
 
@@ -704,16 +640,13 @@ def delete_review_view(request, review_id):
     Redirects:
     - To 'posts' or 'flux' after successful deletion
     """
-
     review = get_object_or_404(Review, pk=review_id, user=request.user)
     next_url = request.GET.get('next') or 'posts'
     if request.method == "POST":
         review.delete()
         messages.success(request, "Votre critique a été supprimée avec succès.")
         return redirect(next_url)
-    
     return render(request, 'feed/confirm_delete.html', {
         'object': review,
         'next': next_url,
     })
-

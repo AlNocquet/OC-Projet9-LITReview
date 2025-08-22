@@ -1,15 +1,5 @@
 """Profile management tests: profile view update, uniqueness rules, and account deletion."""
 
-# Tests du profil utilisateur : mise à jour via la vue, règles d’unicité, suppression de compte.
-# Couvre :
-# - Mise à jour username/email (succès + redirection) ;
-# - Unicité du username (form invalide si déjà pris) ;
-# - Unicité de l’email (form invalide si déjà pris) ;
-# - Suppression de compte (POST) avec redirection.
-#
-# Ces tests sont cohérents avec la règle métier : un email ne peut pas être réutilisé par un autre compte.
-# Ils supposent la présence d’une validation (formulaire ou modèle) qui refuse un email dupliqué.
-
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User

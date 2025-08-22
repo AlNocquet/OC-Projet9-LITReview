@@ -1,22 +1,5 @@
 """CRUD Tickets: creation, edition, deletion, permissions and integration in feed/posts."""
 
-# test_create_ticket_ok : succès de création d’un ticket valide (titre, description, image optionnelle)
-# test_create_ticket_invalid : échec si formulaire incomplet ou invalide (champ manquant)
-# test_edit_ticket_ok : modification réussie d’un ticket par son auteur
-# test_edit_ticket_forbidden : refus de modification par un autre utilisateur
-# test_delete_ticket_ok : suppression réussie d’un ticket par son auteur
-# test_delete_ticket_forbidden : refus de suppression par un autre utilisateur
-# test_ticket_listed_in_posts : ticket créé doit apparaître dans "posts" (page des publications de l’utilisateur)
-# test_ticket_listed_in_flux : ticket doit apparaître dans le flux de l’utilisateur et de ses abonnés (sauf bloqués)
-# test_ticket_requires_login : accès aux vues de création/édition/suppression interdit sans authentification
-# test_ticket_form_validation : contrôle des contraintes de longueur (max_length) sur les champs (titre ≤ 128, description ≤ 2048)
-
-## Ces tests couvrent l’ensemble du cycle de vie d’un ticket :
-    ## création → validation → édition → suppression → affichage dans les flux,
-    ## en garantissant que seules les actions légitimes sont autorisées et que les
-    ## contraintes définies dans le modèle et les formulaires sont respectées.
-
-
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -155,7 +138,7 @@ class TicketTests(TestCase):
         - Reviews (si présentes)
         """
         t1 = Ticket.objects.create(title="A", description="a", user=self.alice)
-        t2 = Ticket.objects.create(title="B", description="b", user=self.alice)
+        Ticket.objects.create(title="B", description="b", user=self.alice)
         # Une review pour vérifier que posts accepte aussi d'autres types
         Review.objects.create(user=self.alice, ticket=t1, headline="H", body="B", rating=4)
 

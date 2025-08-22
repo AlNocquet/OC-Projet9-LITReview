@@ -60,6 +60,7 @@ class SignUpForm(BaseForm, UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        # Cherche un autre User avec cet email
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already used by another account.")
         return email
@@ -82,24 +83,6 @@ class ProfileUpdateForm(BaseModelForm):
         return email
 
 
-class ProfileUpdateForm(BaseModelForm):
-    """
-    Custom form for updating user profile information.
-    Fields: Username, Email.
-    """
-
-    class Meta:
-        model = User
-        fields = ['username', 'email']
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        # Cherche un autre user avec cet email
-        if User.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
-            raise forms.ValidationError("Cet email est déjà utilisé par un autre utilisateur.")
-        return email
-
-
 class LoginForm(BaseForm, AuthenticationForm):
     """
     Custom form for user authentication.
@@ -110,7 +93,6 @@ class LoginForm(BaseForm, AuthenticationForm):
 
     Inherits from Django's AuthenticationForm and BaseForm.
     """
-
     pass
 
 
@@ -166,6 +148,7 @@ class ReviewForm(forms.ModelForm):
     Form to create or update a Review.
     Includes: headline (title), body (comment), rating (0 - 5).
     """
+
     class Meta:
         model = Review
         fields = ['headline', 'body', 'rating']
@@ -180,14 +163,14 @@ class ReviewForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['rating'].widget = forms.NumberInput(attrs={
-                'min': 0,
-                'max': 5,
-                'step': 1
-            })
+        super().__init__(*args, **kwargs)
+        self.fields['rating'].widget = forms.NumberInput(attrs={
+            'min': 0,
+            'max': 5,
+            'step': 1
+        })
 
-    
+
 class TicketReviewForm(forms.Form):
     """
     Form to create Ticket AND Review.
@@ -195,7 +178,7 @@ class TicketReviewForm(forms.Form):
     Includes: headline (title), body (comment), rating (0 - 5).
     """
 
-     # Champs du ticket
+    # Champs du ticket
     title = forms.CharField(
         label="Titre du livre ou article", max_length=128, required=True,
         widget=forms.TextInput(attrs={'maxlength': 128})

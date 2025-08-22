@@ -1,14 +1,5 @@
 """Unit tests for models: Ticket, Review, UserFollows, BlockedUser."""
 
-# Tests unitaires des modèles : Ticket, Review, UserFollows, BlockedUser.
-
-# Spécificités prises en compte :
-# - Les validateurs de champs Django (ex : Min/Max validators) ne sont exécutés que si l'on appelle .full_clean() sur l'instance (ou via un ModelForm).
-# On les teste donc avec .full_clean() et on attend ValidationError.
-# - Les contraintes d'unicité (unique_together) sont gérées par la DB : on vérifie IntegrityError lors d'une double insertion.
-# - La méthode de classe BlockedUser.block() doit supprimer les follows dans les deux sens et créer (ou récupérer) la relation de blocage (idempotente).
-
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError

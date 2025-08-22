@@ -1,13 +1,5 @@
 """Profile form tests: update constraints and email uniqueness validation."""
 
-# Tests unitaires du formulaire de mise à jour de profil (ProfileUpdateForm).
-# Couvre :
-# - Mise à jour valide username/email ;
-# - Unicité du username (form invalide si déjà pris) ;
-# - Unicité de l’email (form invalide si déjà pris).
-#
-# Ces tests reflètent la règle : un email ne peut pas être utilisé par deux comptes.
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from LITReview.forms import ProfileUpdateForm

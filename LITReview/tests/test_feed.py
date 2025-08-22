@@ -1,26 +1,11 @@
 """Tests du flux utilisateur : affichage, filtrage abonnements/bloqués, tri antéchronologique, bouton critique."""
 
-# test_feed_displays_followed_and_own_content : 
-#   - Le flux montre bien les tickets + critiques des suivis et de soi-même,
-#   - Regroupe les critiques par ticket (zéro doublon),
-#   - Affiche correctement les reviews orphelines (critiques sur des tickets non visibles),
-#   - Exclut strictement tout contenu des utilisateurs bloqués (tickets et critiques).
-
-# test_feed_order_is_reverse_chronological :
-#   - Vérifie que le flux est strictement trié du plus récent au plus ancien (ordre antéchronologique),
-#   - Indépendamment de la provenance (ticket ou critique orpheline).
-
-# test_review_button_visibility :
-#   - Vérifie la logique du bouton "Critiquer" :
-#   - Affiché uniquement si l’utilisateur courant n’a pas déjà posté de review sur ce ticket,
-#   - Masqué sinon.
-
-## Ces tests couvrent tout le cycle du flux : regroupement tickets/critiques, gestion abonnements, blocage, reviews orphelines, ordre d’affichage et visibilité des actions utilisateur.
 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from LITReview.models import Ticket, Review, UserFollows, BlockedUser
+
 
 class FeedTests(TestCase):
     """Tests du flux principal utilisateur (vue 'flux')."""
@@ -63,7 +48,7 @@ class FeedTests(TestCase):
         - les critiques groupées au bon endroit,
         - les reviews orphelines (y compris sur des tickets d'utilisateurs bloqués, si elles sont écrites par un suivi),
         - aucun contenu écrit PAR un utilisateur bloqué (ni ticket ni review).
-        
+
         Rappel logique LITReview :
         - Les reviews orphelines d'un suivi sur un ticket d'un bloqué sont visibles (c'est normal).
         - On n'affiche jamais de review ou ticket écrit par un bloqué.

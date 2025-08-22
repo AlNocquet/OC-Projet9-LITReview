@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 120
+exclude =
+    .git,
+    __pycache__,
+    env,
+    venv,
+    config/__pycache__,
+    LITReview/__pycache__,
+    LITReview/migrations,
+    static,
+    locale,
+    db.sqlite3,
+    *.pyc

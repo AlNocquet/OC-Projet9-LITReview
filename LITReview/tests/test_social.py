@@ -1,16 +1,5 @@
 """Social features tests: follow, unfollow, block, and unblock users."""
 
-# Fonctionnalités sociales : suivre / se désabonner / bloquer / débloquer.
-
-# Couvre :
-    # - Suivre un utilisateur (succès, auto-suivi interdit, doublon interdit, cas de blocage)
-    # - Se désabonner (unfollow)
-    # - Bloquer depuis la page abonnements (supprime les follows dans les 2 sens)
-    # - Bloquer depuis la liste des followers (endpoint dédié)
-    # - Débloquer un utilisateur
-    # - Contexte 'subscriptions' (listes suivis / followers / bloqués)
-
-
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User

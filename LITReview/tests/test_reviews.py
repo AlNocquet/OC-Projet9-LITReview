@@ -2,23 +2,6 @@
 édition/suppression et contrôles d'accès."""
 
 
-# Tests fonctionnels et d'intégration pour les Reviews.
-
-# Couvre :
-    # Création d’une review en réponse à un ticket existant
-        # → test_create_review_response_ok
-    # Création d’un ticket + review en une étape
-        # → test_create_ticket_and_review_ok
-    # Édition et suppression d’une review
-        # → test_edit_review_ok, test_edit_review_forbidden_for_non_author, test_delete_review_ok
-    # Contrainte “1 seule review par utilisateur et par ticket”
-        # → test_cannot_review_same_ticket_twice_by_same_user
-    # Flux : blocs (ticket + reviews au-dessus), reviews orphelines, ordre antéchronologique, bouton “Critiquer” (has_review_by_user)
-        # → test_flux_blocks_and_orphans_order, test_flux_sets_has_review_by_user_for_ticket
-    # Visibilité selon abonnements et blocage (UserFollows / BlockedUser)
-        # → test_flux_excludes_blocked_user_content
-
-
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User

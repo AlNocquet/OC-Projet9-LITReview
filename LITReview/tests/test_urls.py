@@ -126,7 +126,10 @@ class UrlsTests(TestCase):
         self.assertEqual(resolve(reverse("password_reset_done")).func.view_class, auth_views.PasswordResetDoneView)
         url = reverse("password_reset_confirm", kwargs={"uidb64": "uid", "token": "set-password"})
         self.assertEqual(resolve(url).func.view_class, auth_views.PasswordResetConfirmView)
-        self.assertEqual(resolve(reverse("password_reset_complete")).func.view_class, auth_views.PasswordResetCompleteView)
+        self.assertEqual(
+            resolve(reverse("password_reset_complete")).func.view_class,
+            auth_views.PasswordResetCompleteView
+        )
 
     # ----------------------------
     # Password change routes

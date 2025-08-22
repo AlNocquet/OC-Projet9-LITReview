@@ -21,7 +21,6 @@ media/
 staticfiles/
 
 # Migrations (keep them in Git for DB consistency)
-# (ne pas ignorer, sinon problème en prod)
 # **/migrations/
 # !*/migrations/__init__.py
 

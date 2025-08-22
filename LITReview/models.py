@@ -1,9 +1,6 @@
 from django.db import models
 from django.conf import settings
-
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-# Create your models here.
 
 
 class Ticket(models.Model):
@@ -38,14 +35,16 @@ class Review(models.Model):
     - time_created: timestamp of review creation.
     """
 
-    rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]) 
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
     headline = models.CharField(max_length=128)
     body = models.TextField(max_length=8192, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE) 
-        # Enregistre l'ID d'un Ticket dans chaque Review
-        # Permet d'accéder directement à l'objet Ticket via review.ticket
-        # De récupérer toutes les reviews associées via ticket.review_set
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    # Stores the Ticket ID in each Review.
+    # Allows direct access to the Ticket object via review.ticket.
+    # To retrieve all reviews associated with a ticket, use ticket.review_set.
     time_created = models.DateTimeField(auto_now_add=True)
 
 
@@ -65,19 +64,26 @@ class UserFollows(models.Model):
     - Each user can follow another user only once (unique_together).
     """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='following')
-    followed_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='followed_by')
-        # user.following.all() renverra tous les enregistrements de suivi où il est le follower ;
-        # user.followed_by.all() donnera tous les enregistrements où il est suivi;
-        # CASCADE supprime tous les objets qui pointaient vers le ForeignKey ;
-        # settings.AUTH_USER_MODEL : 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+    followed_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='followed_by'
+    )
+    # user.following.all() will return all follow records where the user is the follower.
+    # user.followed_by.all() will return all records where the user is followed.
+    # CASCADE deletes all objects that pointed to the ForeignKey.
+    # settings.AUTH_USER_MODEL : custom user
 
-    class Meta :
-        # Classe interne au modèle
-        unique_together = ('user', 'followed_user') 
-            # Contrainte : Ne peut suivre un autre user utilisateur qu'une fois / erreur d’intégrité (IntegrityError) ;
-            # Requête SQL : UNIQUE (user_id, followed_user_id)
-
+    class Meta:
+        # Internal class for the model
+        unique_together = ('user', 'followed_user')
+        # Constraint: Cannot follow another user more than once / IntegrityError.
+        # SQL: UNIQUE (user_id, followed_user_id)
 
 
 class BlockedUser(models.Model):
@@ -94,12 +100,13 @@ class BlockedUser(models.Model):
 
     Constraints:
     - Each user can block another user only once (unique_together).
-    - Blocking is unidirectional: being blocked does not prevent the blocker from being followed unless additional logic is implemented.
+    - Blocking is unidirectional: being blocked does not prevent the blocker from being
+      followed unless additional logic is implemented.
 
     Deletion behavior:
     - If a user is deleted, all related block records are also removed (on_delete=CASCADE).
     """
-        
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -115,12 +122,15 @@ class BlockedUser(models.Model):
         unique_together = ('user', 'blocked_user')
 
     def __str__(self):
-        return f"{self.user.username} a bloqué {self.blocked_user.username}"
-    
+        return (
+            f"{self.user.username} a bloqué {self.blocked_user.username}"
+        )
+
     @classmethod
     def block(cls, user, target_user):
         """
-        Blocks target_user on behalf of user by removing any mutual follows and creating the block relation.
+        Blocks target_user on behalf of user by removing any mutual follows
+        and creating the block relation.
         """
         UserFollows.objects.filter(user=user, followed_user=target_user).delete()
         UserFollows.objects.filter(user=target_user, followed_user=user).delete()

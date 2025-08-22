@@ -1,19 +1,5 @@
 """Unit tests for forms: authentication, profile, social, ticket, and review."""
 
-
-# Tests unitaires des formulaires LITReview :
-    # - Inscription (SignUpForm)
-    # - Connexion (LoginForm)
-    # - Mise à jour profil (ProfileUpdateForm)
-    # - Suivre / Bloquer (FollowUserForm / BlockUserForm)
-    # - Ticket (TicketForm)
-    # - Review (ReviewForm)
-    # - Ticket + Review (TicketReviewForm)
-
-## Ces tests couvrent tout le cycle de saisie utilisateur : 
-# inscription → connexion → mise à jour du profil → suivi / blocage → création de ticket → création de critique → création ticket+critique combinés.
-
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -183,7 +169,6 @@ class TicketReviewFormTests(TestCase):
             'headline': 'Critique',
             'rating': 5,
             'body': 'Commentaire'
-            # 'image' omise volontairement (facultative)
         })
         self.assertTrue(form.is_valid())
 
