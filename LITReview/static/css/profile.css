@@ -119,9 +119,32 @@ h2 {
     background-color: #3498db;
     color: white;
 }
+
 .profile-container .btn-secondary:hover {
     background-color: #2980b9;
 }
+
+
+/* Spécifique au changement de mot de passe/profil : */
+.profile-container .form-field {
+  margin-bottom: 6px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.profile-container .form-field input {
+  margin-bottom: 2px;
+}
+
+.profile-container .form-field .error {
+  min-height: 13px;
+  margin-top: 2px;
+  margin-bottom: 0;
+  font-size: 13px;
+  color: #e74c3c;
+  text-align: left;
+}
+
 
 /******************************* Tablet + Desktop : à partir de 768px *******************************/
 @media (min-width: 768px) {

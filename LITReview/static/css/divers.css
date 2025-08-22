@@ -159,6 +159,25 @@
 }
 
 
+.form-field {
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.form-field input {
+  margin-bottom: 2px;
+}
+
+.form-field .error {
+  min-height: 14px;
+  margin-top: 2px;
+  margin-bottom: 0;
+  font-size: 13px;
+  color: #e74c3c;
+  text-align: left;
+}
+
 /******************************* Tablet : ≥768px *******************************/
 @media (min-width: 768px) {
   .auth-container {

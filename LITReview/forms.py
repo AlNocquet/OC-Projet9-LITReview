@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 from .models import Ticket, Review
@@ -72,6 +72,8 @@ class ProfileUpdateForm(BaseModelForm):
     Fields: username, email (must be unique among other users).
     """
 
+    email = forms.EmailField(required=True)
+    
     class Meta:
         model = User
         fields = ['username', 'email']
@@ -203,3 +205,18 @@ class TicketReviewForm(forms.Form):
     rating = forms.IntegerField(
         label="Note", min_value=0, max_value=5, required=True
     )
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({
+            'autocomplete': 'current-password',
+            'autofocus': True,
+        })
+        self.fields['new_password1'].widget.attrs.update({
+            'autocomplete': 'new-password',
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'autocomplete': 'new-password',
+        })

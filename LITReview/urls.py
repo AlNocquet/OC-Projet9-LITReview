@@ -1,4 +1,5 @@
 from django.contrib.auth import views as auth_views
+from .forms import CustomPasswordChangeForm
 from django.urls import path
 from . import views
 
@@ -67,7 +68,10 @@ urlpatterns = [
     # (vue native Django)
     path(
         'password_change/',
-        auth_views.PasswordChangeView.as_view(template_name='auth/password_change_form.html'),
+        auth_views.PasswordChangeView.as_view(
+            template_name='auth/password_change_form.html',
+            form_class=CustomPasswordChangeForm
+        ),
         name='password_change'
     ),
     path(
@@ -76,3 +80,5 @@ urlpatterns = [
         name='password_change_done'
     ),
 ]
+
+
