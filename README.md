@@ -36,26 +36,28 @@ This project fully meets the OpenClassrooms P9 specification, with an emphasis o
 
 ## Project structure
 
+```text
 OC-Projet9-LITReview/
 ├── config/
-│ ├── settings.py
-│ ├── urls.py
-│ └── ...
+│   ├── settings.py
+│   ├── urls.py
+│   └── ...
 ├── LITReview/
-│ ├── models.py
-│ ├── views.py
-│ ├── forms.py
-│ ├── context_processors.py
-│ ├── templates/
-│ ├── static/
-│ ├── tests/
-│ └── ...
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── context_processors.py
+│   ├── templates/
+│   ├── static/
+│   ├── tests/
+│   └── ...
 ├── locale/
 ├── media/
 ├── db.sqlite3
 ├── manage.py
 ├── requirements.txt
 └── README.md
+```
 
 ---
 
@@ -180,26 +182,28 @@ Le projet respecte le cahier des charges OpenClassrooms P9 : fonctionnalités 
 
 ## Structure du projet
 
+```text
 OC-Projet9-LITReview/
 ├── config/
-│ ├── settings.py
-│ ├── urls.py
-│ └── ...
+│   ├── settings.py
+│   ├── urls.py
+│   └── ...
 ├── LITReview/
-│ ├── models.py
-│ ├── views.py
-│ ├── forms.py
-│ ├── context_processors.py
-│ ├── templates/
-│ ├── static/
-│ ├── tests/
-│ └── ...
+│   ├── models.py
+│   ├── views.py
+│   ├── forms.py
+│   ├── context_processors.py
+│   ├── templates/
+│   ├── static/
+│   ├── tests/
+│   └── ...
 ├── locale/
 ├── media/
 ├── db.sqlite3
 ├── manage.py
 ├── requirements.txt
 └── README.md
+```
 
 ---
 
